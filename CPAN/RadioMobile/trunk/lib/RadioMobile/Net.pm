@@ -4,7 +4,10 @@ use 5.010000;
 use strict;
 use warnings;
 
-use Class::Struct;
+use Class::Container;
+use Params::Validate qw(:types);
+use base qw(Class::Container);
+
 use File::Binary;
 
 # NET STRUCTURE - Len 72 bytes
@@ -28,14 +31,21 @@ use constant PACK	=> 'ffsfffssfffssA30';
 use constant ITEMS	=> qw/minfx maxfx pol eps sgm ens climate mdvar time location
 							situation hops topology name/;
 
-struct( map {$_ => '$'} (ITEMS) );
+
+__PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
+use Class::MethodMaker [scalar => [ITEMS]];
+
+sub new {
+	my $package = shift;
+	my $s = $package->SUPER::new(@_);
+	return $s;
+}
 
 sub parse {
-	my $proto	= shift;
+	my $s		= shift;
 	my $f	  	= shift;
 	my @struct 	= unpack(PACK,$f->get_bytes(LEN));
-	my %params 	= map {(ITEMS)[$_] => $struct[$_]} (0..(ITEMS)-1);
-	return $proto->new(%params);
+	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
 }
 
 1;

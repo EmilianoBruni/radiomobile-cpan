@@ -4,7 +4,10 @@ use 5.010000;
 use strict;
 use warnings;
 
-use Class::Struct;
+use Class::Container;
+use Params::Validate qw(:types);
+use base qw(Class::Container);
+
 use File::Binary;
 
 # HEADER STRUCTURE - Len 10 bytes
@@ -17,14 +20,19 @@ use constant LEN	=> 10;
 use constant PACK	=> 'fsss';
 use constant ITEMS	=> qw/version networkCount unitCount systemCount/;
 
-struct( map {$_ => '$'} (ITEMS) );
+__PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
+use Class::MethodMaker [scalar => [ITEMS]];
 
+sub new {
+	my $package = shift;
+	my $s = $package->SUPER::new(@_);
+	return $s;
+}
 sub parse {
-	my $proto	= shift;
+	my $s		= shift;
 	my $f	  	= shift;
 	my @struct 	= unpack(PACK,$f->get_bytes(LEN));
-	my %params 	= map {(ITEMS)[$_] => $struct[$_]} (0..(ITEMS)-1);
-	return $proto->new(%params);
+	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
 }
 
 1;

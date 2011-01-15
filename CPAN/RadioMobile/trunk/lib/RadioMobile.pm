@@ -38,14 +38,16 @@ sub parse {
 	my $f = new File::Binary($s->file);
 
 	# read and unpack the header
-	my $header = RadioMobile::Header->parse($f);
-	print Data::Dumper::Dumper($header);
+	my $header = new RadioMobile::Header;
+	$header->parse($f);
+	#print Data::Dumper::Dumper($header);
 	#print $header->version;
 
 	# read and unpack units
 	my @units;
 	foreach (1..$header->unitCount) {
-		my $unit = RadioMobile::Unit->parse($f);
+		my $unit = new RadioMobile::Unit;
+		$unit->parse($f);
 		push @units,$unit;
 	}
 	#print Data::Dumper::Dumper(\@units);
@@ -53,7 +55,8 @@ sub parse {
 	# read and unpack systems
 	my @systems;
 	foreach (1..$header->systemCount) {
-		my $system = RadioMobile::System->parse($f);
+		my $system = new RadioMobile::System;
+		$system->parse($f);
 		push @systems,$system;
 	}
 	#print Data::Dumper::Dumper(\@systems);
@@ -131,13 +134,15 @@ foreach (0..$header->networkCount-1) {
 # read and unpack nets
 my @nets;
 foreach (1..$header->networkCount) {
-	my $net = RadioMobile::Net->parse($f);
+	my $net = new RadioMobile::Net;
+	$net->parse($f);
 	push @nets,$net;
 }
 #print Data::Dumper::Dumper(\@nets);
 
 # read and unpack coverage
-my $cov = RadioMobile::Cov->parse($f);
+my $cov = new RadioMobile::Cov;
+$cov->parse($f);
 #print Data::Dumper::Dumper($cov);
 
 # lettura del percorso al file map
@@ -202,7 +207,7 @@ my @lineLossPerMeter = unpack("f" . $header->systemCount,$b);
 # parse config elements (currently only Style Networks properties)
 my $config = new RadioMobile::Config();
 $config->parse($f);
-print Data::Dumper::Dumper($config);
+#print Data::Dumper::Dumper($config);
 
 
 # a short integer set how much structure follows for
@@ -210,7 +215,7 @@ print Data::Dumper::Dumper($config);
 $b = $f->get_bytes(2) unless(eof($f->{_fh}));
 my $format = "s";
 my @data = unpack($format,$b);
-print Data::Dumper::Dumper(\@data);
+#print Data::Dumper::Dumper(\@data);
 
 $f->close;
 }
