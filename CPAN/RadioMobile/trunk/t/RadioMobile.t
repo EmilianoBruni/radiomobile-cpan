@@ -11,8 +11,8 @@ BEGIN { use_ok('RadioMobile') };
 my $rm = new RadioMobile;
 $rm->file('t/net1.net');
 $rm->parse;
-$rm->file('t/wdasl.net');
-$rm->parse;
+#$rm->file('t/wdasl.net');
+#$rm->parse;
 
 #########################
 
