@@ -8,3 +8,4 @@ lib/RadioMobile/Header.pm
 lib/RadioMobile/System.pm
 lib/RadioMobile/Net.pm
 lib/RadioMobile/Cov.pm
+lib/RadioMobile/Config.pm
