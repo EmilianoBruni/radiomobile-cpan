@@ -40,7 +40,7 @@ sub parse {
 	# read and unpack the header
 	my $header = new RadioMobile::Header;
 	$header->parse($f);
-	#print Data::Dumper::Dumper($header);
+	print Data::Dumper::Dumper($header);
 	#print $header->version;
 
 	# read and unpack units
@@ -214,8 +214,23 @@ $config->parse($f);
 # system antenna type (0 == omni.ant)
 $b = $f->get_bytes(2) unless(eof($f->{_fh}));
 my $format = "s";
-my @data = unpack($format,$b);
-#print Data::Dumper::Dumper(\@data);
+my $systemAntennaCount = unpack($format,$b);
+my @systemsAntenna;
+foreach (1..$systemAntennaCount) {
+	$b = $f->get_bytes(2);
+	my $antennaLenght = unpack($format,$b);
+	unless ($antennaLenght == 0) {
+		$b = $f->get_bytes($antennaLenght);
+		push @systemsAntenna,unpack("a" . $antennaLenght,$b)
+	} else {
+		push @systemsAntenna,'';
+	}
+}
+print Data::Dumper::Dumper(\@systemsAntenna);
+
+$b = $f->get_bytes(32);
+my @data = unpack("c32",$b);
+print Data::Dumper::Dumper(\@data);
 
 $f->close;
 }
