@@ -251,6 +251,7 @@ $skip2   = 'x[' . ($header->networkCount-1)*2 .  ']';
 $b = $f->get_bytes($NetRoleLen->($header) * 2);
 foreach (0..$header->networkCount-1) {
 	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($header->unitCount-1) .  'S'; 
+	my @net;
 	my @azimut = unpack($format,$b);
 	foreach my $azimut (@azimut) {
 		my $unitDirection = 0;
@@ -260,32 +261,60 @@ foreach (0..$header->networkCount-1) {
 		} else {
 			$azimut /= 10;
 		}
-		push @antennaAzimut, {azimut => $azimut, direction => $unitDirection}
+		push @net, {azimut => $azimut, direction => $unitDirection}
 	}
+	push @antennaAzimut, \@net;
 }
 
+# a short integer set how much structure follows.
+# currently there are unknown elements
+$b = $f->get_bytes(2);
+my $format = "s";
+my $unknowsCount = unpack($format,$b);
+$b = $f->get_bytes($unknowsCount*2);
+my @unknownElements = unpack($format x $unknowsCount,$b);
+print Data::Dumper::Dumper(\@unknownElements);
+
+# a short integer set how much network enabled in ElevationAngle
+$b = $f->get_bytes(2);
+my $format = "s";
+my $antennaNetworkCount = unpack($format,$b);
+# a short integer set how much units enabled in ElevationAngle
+$b = $f->get_bytes(2);
+my $format = "s";
+my $antennaUnitsCount = unpack($format,$b);
 my @antennaElevation;
-$b = $f->get_bytes($NetRoleLen->($header) * 2);
-foreach (0..$header->networkCount-1) {
-	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($header->unitCount-1) .  'S'; 
+$b = $f->get_bytes($antennaNetworkCount * 2 * $antennaUnitsCount);
+foreach (0..$antennaNetworkCount-1) {
+	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($antennaUnitsCount-1) .
+	'S'; 
+	my @net;
 	my @elevation = unpack($format,$b);
 	foreach my $elevation (@elevation) {
 		my $unitDirection = 0;
-		if ($elevation > 10000) {
-			$unitDirection = $elevation - 10000;
-			$elevation = 0;
-		} else {
-			$elevation /= 10;
-		}
-		push @antennaElevation, {azimut => $elevation, direction => $unitDirection}
+		$elevation /= 10;
+		push @net, {azimut => $elevation, direction => $unitDirection}
 	}
+	push @antennaElevation,\@net;
 }
+#print Data::Dumper::Dumper(\@antennaElevation);
 
 
-print Data::Dumper::Dumper(\@antennaElevation);
-#$b = $f->get_bytes(32);
-#my @data = unpack("s16",$b);
-#print Data::Dumper::Dumper(\@data);
+$b = $f->get_bytes(2);
+my @data = unpack("s",$b);
+print Data::Dumper::Dumper(\@data);
+$b = $f->get_bytes(2);
+my @data = unpack("s",$b);
+print Data::Dumper::Dumper(\@data);
+$b = $f->get_bytes(2);
+my @data = unpack("s",$b);
+print Data::Dumper::Dumper(\@data);
+$b = $f->get_bytes(41);
+my @data = unpack("a41",$b);
+print Data::Dumper::Dumper(\@data);
+$b = $f->get_bytes(4);
+my @data = unpack("s2",$b);
+print Data::Dumper::Dumper(\@data);
 
 $f->close;
 }
