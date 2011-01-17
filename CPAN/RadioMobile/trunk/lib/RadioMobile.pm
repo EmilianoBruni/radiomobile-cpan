@@ -33,7 +33,8 @@ sub parse {
 	my $NetRoleLen		= sub { my $header = shift; 
 		return $header->networkCount * $header->unitCount };
 	# NET SYSTEM STRUCTURE
-	my $NetSystemLen	= $NetRoleLen;
+	my $UnitSystemLen		= sub { my $header = shift; 
+		return $header->systemCount * $header->unitCount };
 
 	my $f = new File::Binary($s->file);
 
@@ -85,7 +86,7 @@ sub parse {
 # \x80 (128) first role, belong to network, \x81 (129) first role, belong 
 
 my @netRole;
-$b = $f->get_bytes($NetSystemLen->($header));
+$b = $f->get_bytes($NetRoleLen->($header));
 my $skip   = 'x[' . ($header->networkCount-1) .  ']';
 foreach (0..$header->networkCount-1) {
 	my $format = 'x[' . $_ . '](C' .  $skip . ')' . ($header->unitCount-1) .  'C'; 
@@ -123,7 +124,7 @@ foreach my $item (@netRole) {
 # like _NetData.csv
 my @netSystem;
 my $skip2   = 'x[' . ($header->networkCount-1)*2 .  ']';
-$b = $f->get_bytes($NetSystemLen->($header) * 2);
+$b = $f->get_bytes($NetRoleLen->($header) * 2);
 foreach (0..$header->networkCount-1) {
 	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($header->unitCount-1) .  's'; 
 	push @netSystem, [unpack($format,$b)];
@@ -182,7 +183,7 @@ unless(eof($f->{_fh})) {
 # like _NetData.csv
 my @netHeight;
 my $skip4   = 'x[' . ($header->networkCount-1)*4 .  ']';
-$b = $f->get_bytes( 4 * $NetSystemLen->($header)) unless(eof($f->{_fh}));
+$b = $f->get_bytes( 4 * $NetRoleLen->($header)) unless(eof($f->{_fh}));
 foreach (0..$header->networkCount-1) {
 	my $format = 'x[' . $_ * 4  . '](f' .  $skip4 . ')' . ($header->unitCount-1) .  's'; 
 	push @netHeight, [unpack($format,$b)];
@@ -228,9 +229,63 @@ foreach (1..$systemAntennaCount) {
 }
 print Data::Dumper::Dumper(\@systemsAntenna);
 
-$b = $f->get_bytes(32);
-my @data = unpack("c32",$b);
-print Data::Dumper::Dumper(\@data);
+
+# read azimut antenas
+# AZIMUT_ANTENNAS shows the azimut of every antenna in every networks
+# the azimut is a short unsigned integer identifing it's value power by ten
+# If it's value is greater than 10.000, it's not a azimut value but it's the
+# direcion by unit which index is the field value - 10000
+# Given A,B,C... units and 1,2,3 Network so A1 is a short 
+# indicate the azimut value.
+# It's structure is 
+# A1 A2 A3 ... B1 B2 B3 ... C1 C2 C3 ...
+# The following code traslate this in a AoA with this structure
+# [ 
+#   [A1 B1 C1 ... ] 
+#   [A2 B2 C2 ....] 
+#   [A3 B3 C3 ... ]
+# ]
+# like _NetData.csv
+my @antennaAzimut;
+$skip2   = 'x[' . ($header->networkCount-1)*2 .  ']';
+$b = $f->get_bytes($NetRoleLen->($header) * 2);
+foreach (0..$header->networkCount-1) {
+	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($header->unitCount-1) .  'S'; 
+	my @azimut = unpack($format,$b);
+	foreach my $azimut (@azimut) {
+		my $unitDirection = 0;
+		if ($azimut > 10000) {
+			$unitDirection = $azimut - 10000;
+			$azimut = 0;
+		} else {
+			$azimut /= 10;
+		}
+		push @antennaAzimut, {azimut => $azimut, direction => $unitDirection}
+	}
+}
+
+my @antennaElevation;
+$b = $f->get_bytes($NetRoleLen->($header) * 2);
+foreach (0..$header->networkCount-1) {
+	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($header->unitCount-1) .  'S'; 
+	my @elevation = unpack($format,$b);
+	foreach my $elevation (@elevation) {
+		my $unitDirection = 0;
+		if ($elevation > 10000) {
+			$unitDirection = $elevation - 10000;
+			$elevation = 0;
+		} else {
+			$elevation /= 10;
+		}
+		push @antennaElevation, {azimut => $elevation, direction => $unitDirection}
+	}
+}
+
+
+print Data::Dumper::Dumper(\@antennaElevation);
+#$b = $f->get_bytes(32);
+#my @data = unpack("s16",$b);
+#print Data::Dumper::Dumper(\@data);
 
 $f->close;
 }
