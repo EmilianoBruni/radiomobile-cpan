@@ -8,7 +8,7 @@
 use Test::More tests => 1;
 BEGIN { use_ok('RadioMobile') };
 
-my $rm = new RadioMobile;
+my $rm = new RadioMobile(debug => $ENV{'RM_DEBUG'});
 $rm->file('t/net1.net');
 $rm->parse;
 #$rm->file('t/wdasl.net');

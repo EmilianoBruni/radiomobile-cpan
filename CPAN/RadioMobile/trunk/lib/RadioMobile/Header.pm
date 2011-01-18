@@ -4,6 +4,8 @@ use 5.010000;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
@@ -33,6 +35,11 @@ sub parse {
 	my $f	  	= shift;
 	my @struct 	= unpack(PACK,$f->get_bytes(LEN));
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
+}
+
+sub dump {
+	my $s	= shift;
+	return Data::Dumper::Dumper($s->dump_parameters);
 }
 
 1;

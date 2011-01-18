@@ -4,10 +4,11 @@ use 5.010000;
 use strict;
 use warnings;
 
-use Class::Struct;
-use File::Binary;
+use Class::Container;
+use Params::Validate qw(:types);
+use base qw(Class::Container);
 
-use Data::Dumper;
+use File::Binary;
 
 use RadioMobile::Header;
 use RadioMobile::Unit;
@@ -16,16 +17,19 @@ use RadioMobile::Net;
 use RadioMobile::Cov;
 use RadioMobile::Config;
 
+__PACKAGE__->valid_params(
+							file 	=> { type => SCALAR, optional => 1 },
+							debug 	=> { type => SCALAR, optional => 1, default => 0 },
+);
+
+use Class::MethodMaker [ scalar => [qw/file debug/], new => 'new' ];
+
 sub new {
-	my $proto = shift;
-	my $class = $proto || shift;
-
-	my $self	= bless {},$class;
-
+	my $proto 	= shift;
+	my $self	= my $self = $proto->SUPER::new(@_);
 	return $self;
 }
 
-sub file { my $s = shift; if (@_) {$s->{file} = shift}; return $s->{file}; }
 
 sub parse {
 	my $s = shift;
@@ -41,8 +45,7 @@ sub parse {
 	# read and unpack the header
 	my $header = new RadioMobile::Header;
 	$header->parse($f);
-	print Data::Dumper::Dumper($header);
-	#print $header->version;
+	print $header->dump if $s->debug;
 
 	# read and unpack units
 	my @units;
