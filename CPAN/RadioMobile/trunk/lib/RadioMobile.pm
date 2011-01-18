@@ -20,15 +20,22 @@ use RadioMobile::Config;
 __PACKAGE__->valid_params(
 							file 	=> { type => SCALAR, optional => 1 },
 							debug 	=> { type => SCALAR, optional => 1, default => 0 },
+							header	=> { isa  => 'RadioMobile::Header'},
+							units	=> { isa  => 'RadioMobile::Units'},
 );
 
-use Class::MethodMaker [ scalar => [qw/file debug/] ];
+__PACKAGE__->contained_objects(
+	'header'	=> 'RadioMobile::Header',
+	'units'		=> 'RadioMobile::Units',
+);
+
+use Class::MethodMaker [ scalar => [qw/file debug header units bfile/] ];
 
 our $VERSION	= 0.1;
 
 sub new {
 	my $proto 	= shift;
-	my $self	= my $self = $proto->SUPER::new(@_);
+	my $self	= $proto->SUPER::new(@_);
 	return $self;
 }
 
@@ -42,21 +49,19 @@ sub parse {
 	my $UnitSystemLen		= sub { my $header = shift; 
 		return $header->systemCount * $header->unitCount };
 
-	my $f = new File::Binary($s->file);
+	$s->{bfile} = new File::Binary($s->file);
 
 	# read header
-	my $header = new RadioMobile::Header;
-	$header->parse($f);
-	print $header->dump if $s->debug;
+	$s->header->parse;
+	print $s->header->dump if $s->debug;
 
 	# read units
-	my $units	= new RadioMobile::Units;
-	$units->parse($f, $header->unitCount);
-	print $units->dump if $s->debug;
+	$s->units->parse;
+	print $s->units->dump if $s->debug;
 
 	# read systems
 	my $systems	= new RadioMobile::Systems;
-	$systems->parse($f, $header->systemCount);
+	$systems->parse($s->bfile, $s->header->systemCount);
 	print $systems->dump if $s->debug;
 
 
@@ -83,10 +88,10 @@ sub parse {
 # \x80 (128) first role, belong to network, \x81 (129) first role, belong 
 
 my @netRole;
-$b = $f->get_bytes($NetRoleLen->($header));
-my $skip   = 'x[' . ($header->networkCount-1) .  ']';
-foreach (0..$header->networkCount-1) {
-	my $format = 'x[' . $_ . '](C' .  $skip . ')' . ($header->unitCount-1) .  'C'; 
+$b = $s->bfile->get_bytes($NetRoleLen->($s->header));
+my $skip   = 'x[' . ($s->header->networkCount-1) .  ']';
+foreach (0..$s->header->networkCount-1) {
+	my $format = 'x[' . $_ . '](C' .  $skip . ')' . ($s->header->unitCount-1) .  'C'; 
 	push @netRole, [unpack($format,$b)];
 }
 
@@ -120,10 +125,10 @@ foreach my $item (@netRole) {
 # ]
 # like _NetData.csv
 my @netSystem;
-my $skip2   = 'x[' . ($header->networkCount-1)*2 .  ']';
-$b = $f->get_bytes($NetRoleLen->($header) * 2);
-foreach (0..$header->networkCount-1) {
-	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($header->unitCount-1) .  's'; 
+my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
+$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
+foreach (0..$s->header->networkCount-1) {
+	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  's'; 
 	push @netSystem, [unpack($format,$b)];
 }
 
@@ -131,33 +136,33 @@ foreach (0..$header->networkCount-1) {
 
 # read and unpack nets
 my @nets;
-foreach (1..$header->networkCount) {
+foreach (1..$s->header->networkCount) {
 	my $net = new RadioMobile::Net;
-	$net->parse($f);
+	$net->parse($s->bfile);
 	push @nets,$net;
 }
 #print Data::Dumper::Dumper(\@nets);
 
 # read and unpack coverage
 my $cov = new RadioMobile::Cov;
-$cov->parse($f);
+$cov->parse($s->bfile);
 #print Data::Dumper::Dumper($cov);
 
 # lettura del percorso al file map
-my $l = unpack("s",$f->get_bytes(2));
+my $l = unpack("s",$s->bfile->get_bytes(2));
 my $map_file = '';
 if ($l > 0) {
-	$map_file = unpack("A$l",$f->get_bytes($l));
+	$map_file = unpack("A$l",$s->bfile->get_bytes($l));
 }
 
 # lettura dei percorsi delle picture da caricare
-unless(eof($f->{_fh})) {
+unless(eof($s->bfile->{_fh})) {
 	# forse carica le pictures
-	$l = unpack("s",$f->get_bytes(2));
+	$l = unpack("s",$s->bfile->get_bytes(2));
 	while ($l > 0) {
-		my $pic_file = $f->get_bytes($l);
+		my $pic_file = $s->bfile->get_bytes($l);
 		# process pic_file: TO DO!!!???
-		$l = unpack("s",$f->get_bytes(2));
+		$l = unpack("s",$s->bfile->get_bytes(2));
 	}
 }
 
@@ -179,10 +184,10 @@ unless(eof($f->{_fh})) {
 # ]
 # like _NetData.csv
 my @netHeight;
-my $skip4   = 'x[' . ($header->networkCount-1)*4 .  ']';
-$b = $f->get_bytes( 4 * $NetRoleLen->($header)) unless(eof($f->{_fh}));
-foreach (0..$header->networkCount-1) {
-	my $format = 'x[' . $_ * 4  . '](f' .  $skip4 . ')' . ($header->unitCount-1) .  's'; 
+my $skip4   = 'x[' . ($s->header->networkCount-1)*4 .  ']';
+$b = $s->bfile->get_bytes( 4 * $NetRoleLen->($s->header)) unless(eof($s->bfile->{_fh}));
+foreach (0..$s->header->networkCount-1) {
+	my $format = 'x[' . $_ * 4  . '](f' .  $skip4 . ')' . ($s->header->unitCount-1) .  's'; 
 	push @netHeight, [unpack($format,$b)];
 }
 #print Data::Dumper::Dumper(\@netHeight);
@@ -191,34 +196,34 @@ foreach (0..$header->networkCount-1) {
 
 # UNIT_ICON
 # a vector of byte with icon index base-0 of every units
-$b = $f->get_bytes( $header->unitCount) unless(eof($f->{_fh})); 
-my @unitIcon = unpack('c' x $header->unitCount,$b);
+$b = $s->bfile->get_bytes( $s->header->unitCount) unless(eof($s->bfile->{_fh})); 
+my @unitIcon = unpack('c' x $s->header->unitCount,$b);
 #print Data::Dumper::Dumper(\@unitIcon);
 
 
 # ADDITIONAL_CABLE_LOSS
 # a vector of float with additional cable loss for every system
-$b = $f->get_bytes( 4 * $header->systemCount) unless(eof($f->{_fh}));
-my @lineLossPerMeter = unpack("f" . $header->systemCount,$b);
+$b = $s->bfile->get_bytes( 4 * $s->header->systemCount) unless(eof($s->bfile->{_fh}));
+my @lineLossPerMeter = unpack("f" . $s->header->systemCount,$b);
 #print Data::Dumper::Dumper(\@lineLossPerMeter);
 
 # parse config elements (currently only Style Networks properties)
 my $config = new RadioMobile::Config();
-$config->parse($f);
+$config->parse($s->bfile);
 #print Data::Dumper::Dumper($config);
 
 
 # a short integer set how much structure follows for
 # system antenna type (0 == omni.ant)
-$b = $f->get_bytes(2) unless(eof($f->{_fh}));
+$b = $s->bfile->get_bytes(2) unless(eof($s->bfile->{_fh}));
 my $format = "s";
 my $systemAntennaCount = unpack($format,$b);
 my @systemsAntenna;
 foreach (1..$systemAntennaCount) {
-	$b = $f->get_bytes(2);
+	$b = $s->bfile->get_bytes(2);
 	my $antennaLenght = unpack($format,$b);
 	unless ($antennaLenght == 0) {
-		$b = $f->get_bytes($antennaLenght);
+		$b = $s->bfile->get_bytes($antennaLenght);
 		push @systemsAntenna,unpack("a" . $antennaLenght,$b)
 	} else {
 		push @systemsAntenna,'';
@@ -244,10 +249,10 @@ print Data::Dumper::Dumper(\@systemsAntenna);
 # ]
 # like _NetData.csv
 my @antennaAzimut;
-$skip2   = 'x[' . ($header->networkCount-1)*2 .  ']';
-$b = $f->get_bytes($NetRoleLen->($header) * 2);
-foreach (0..$header->networkCount-1) {
-	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($header->unitCount-1) .  'S'; 
+$skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
+$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
+foreach (0..$s->header->networkCount-1) {
+	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  'S'; 
 	my @net;
 	my @azimut = unpack($format,$b);
 	foreach my $azimut (@azimut) {
@@ -265,23 +270,23 @@ foreach (0..$header->networkCount-1) {
 
 # a short integer set how much structure follows.
 # currently there are unknown elements
-$b = $f->get_bytes(2);
+$b = $s->bfile->get_bytes(2);
 my $format = "s";
 my $unknowsCount = unpack($format,$b);
-$b = $f->get_bytes($unknowsCount*2);
+$b = $s->bfile->get_bytes($unknowsCount*2);
 my @unknownElements = unpack($format x $unknowsCount,$b);
 print Data::Dumper::Dumper(\@unknownElements);
 
 # a short integer set how much network enabled in ElevationAngle
-$b = $f->get_bytes(2);
+$b = $s->bfile->get_bytes(2);
 my $format = "s";
 my $antennaNetworkCount = unpack($format,$b);
 # a short integer set how much units enabled in ElevationAngle
-$b = $f->get_bytes(2);
+$b = $s->bfile->get_bytes(2);
 my $format = "s";
 my $antennaUnitsCount = unpack($format,$b);
 my @antennaElevation;
-$b = $f->get_bytes($antennaNetworkCount * 2 * $antennaUnitsCount);
+$b = $s->bfile->get_bytes($antennaNetworkCount * 2 * $antennaUnitsCount);
 foreach (0..$antennaNetworkCount-1) {
 	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($antennaUnitsCount-1) .
 	'S'; 
@@ -297,24 +302,24 @@ foreach (0..$antennaNetworkCount-1) {
 #print Data::Dumper::Dumper(\@antennaElevation);
 
 # got version number again
-$b = $f->get_bytes(2);
+$b = $s->bfile->get_bytes(2);
 my $versionNumberAgain = unpack("s",$b);
 
-die "not find version number where expected" unless ($versionNumberAgain == $header->version);
+die "not find version number where expected" unless ($versionNumberAgain == $s->header->version);
 
 # this is a zero, don't known what it's
-$b = $f->get_bytes(2);
+$b = $s->bfile->get_bytes(2);
 my $unknownZeroNumber = unpack("s",$b);
 die "unexpected value of $unknownZeroNumber while waiting 0 " unless ($unknownZeroNumber == 0);
 
 # leght of landheight.dat path
-$b = $f->get_bytes(2);
+$b = $s->bfile->get_bytes(2);
 my $lenghtLandHeight = unpack("s",$b);
-$b = $f->get_bytes($lenghtLandHeight);
+$b = $s->bfile->get_bytes($lenghtLandHeight);
 my $pathLandHeight = unpack("a$lenghtLandHeight",$b);
 print $pathLandHeight, "\n";
 
-$f->close;
+$s->bfile->close;
 }
 
 

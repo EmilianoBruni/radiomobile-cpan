@@ -32,7 +32,7 @@ sub new {
 }
 sub parse {
 	my $s		= shift;
-	my $f	  	= shift;
+	my $f	  	= $s->container->bfile;
 	my @struct 	= unpack(PACK,$f->get_bytes(LEN));
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
 }

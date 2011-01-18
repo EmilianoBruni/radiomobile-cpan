@@ -4,7 +4,8 @@ use 5.010000;
 use strict;
 use warnings;
 
-use base qw/Array::AsObject/;
+use Class::Container;
+use base qw(Class::Container Array::AsObject);
 
 use File::Binary;
 
@@ -12,9 +13,8 @@ use RadioMobile::Unit;
 
 sub parse {
 	my $s	 	= shift;
-	my $f	  	= shift;
-	my $len		= shift;
-
+	my $f	  	= $s->container->bfile;
+	my $len		= $s->container->header->unitCount;
 	foreach (1..$len) {
 		my $unit = new RadioMobile::Unit;
 		$unit->parse($f);
