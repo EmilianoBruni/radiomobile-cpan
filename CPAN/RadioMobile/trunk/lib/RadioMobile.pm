@@ -24,6 +24,8 @@ __PACKAGE__->valid_params(
 
 use Class::MethodMaker [ scalar => [qw/file debug/] ];
 
+our $VERSION	= 0.1;
+
 sub new {
 	my $proto 	= shift;
 	my $self	= my $self = $proto->SUPER::new(@_);
