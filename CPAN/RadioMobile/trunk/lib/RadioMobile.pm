@@ -11,8 +11,8 @@ use base qw(Class::Container);
 use File::Binary;
 
 use RadioMobile::Header;
-use RadioMobile::Unit;
-use RadioMobile::System;
+use RadioMobile::Units;
+use RadioMobile::Systems;
 use RadioMobile::Net;
 use RadioMobile::Cov;
 use RadioMobile::Config;
@@ -22,7 +22,7 @@ __PACKAGE__->valid_params(
 							debug 	=> { type => SCALAR, optional => 1, default => 0 },
 );
 
-use Class::MethodMaker [ scalar => [qw/file debug/], new => 'new' ];
+use Class::MethodMaker [ scalar => [qw/file debug/] ];
 
 sub new {
 	my $proto 	= shift;
@@ -42,28 +42,20 @@ sub parse {
 
 	my $f = new File::Binary($s->file);
 
-	# read and unpack the header
+	# read header
 	my $header = new RadioMobile::Header;
 	$header->parse($f);
 	print $header->dump if $s->debug;
 
-	# read and unpack units
-	my @units;
-	foreach (1..$header->unitCount) {
-		my $unit = new RadioMobile::Unit;
-		$unit->parse($f);
-		push @units,$unit;
-	}
-	#print Data::Dumper::Dumper(\@units);
+	# read units
+	my $units	= new RadioMobile::Units;
+	$units->parse($f, $header->unitCount);
+	print $units->dump if $s->debug;
 
-	# read and unpack systems
-	my @systems;
-	foreach (1..$header->systemCount) {
-		my $system = new RadioMobile::System;
-		$system->parse($f);
-		push @systems,$system;
-	}
-	#print Data::Dumper::Dumper(\@systems);
+	# read systems
+	my $systems	= new RadioMobile::Systems;
+	$systems->parse($f, $header->systemCount);
+	print $systems->dump if $s->debug;
 
 
 # read net_role

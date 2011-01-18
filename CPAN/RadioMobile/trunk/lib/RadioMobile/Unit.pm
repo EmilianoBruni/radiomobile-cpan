@@ -39,6 +39,11 @@ sub parse {
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
 }
 
+sub dump {
+	my $s	= shift;
+	return Data::Dumper::Dumper($s->dump_parameters);
+}
+
 1;
 
 __END__
