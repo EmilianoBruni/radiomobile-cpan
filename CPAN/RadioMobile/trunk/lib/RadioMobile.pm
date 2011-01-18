@@ -299,22 +299,23 @@ foreach (0..$antennaNetworkCount-1) {
 }
 #print Data::Dumper::Dumper(\@antennaElevation);
 
+# got version number again
+$b = $f->get_bytes(2);
+my $versionNumberAgain = unpack("s",$b);
 
+die "not find version number where expected" unless ($versionNumberAgain == $header->version);
+
+# this is a zero, don't known what it's
 $b = $f->get_bytes(2);
-my @data = unpack("s",$b);
-print Data::Dumper::Dumper(\@data);
+my $unknownZeroNumber = unpack("s",$b);
+die "unexpected value of $unknownZeroNumber while waiting 0 " unless ($unknownZeroNumber == 0);
+
+# leght of landheight.dat path
 $b = $f->get_bytes(2);
-my @data = unpack("s",$b);
-print Data::Dumper::Dumper(\@data);
-$b = $f->get_bytes(2);
-my @data = unpack("s",$b);
-print Data::Dumper::Dumper(\@data);
-$b = $f->get_bytes(41);
-my @data = unpack("a41",$b);
-print Data::Dumper::Dumper(\@data);
-$b = $f->get_bytes(4);
-my @data = unpack("s2",$b);
-print Data::Dumper::Dumper(\@data);
+my $lenghtLandHeight = unpack("s",$b);
+$b = $f->get_bytes($lenghtLandHeight);
+my $pathLandHeight = unpack("a$lenghtLandHeight",$b);
+print $pathLandHeight, "\n";
 
 $f->close;
 }
