@@ -4,6 +4,8 @@ use 5.010000;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
@@ -41,6 +43,11 @@ sub new {
 	return $s;
 }
 
+sub dump {
+	my $s	= shift;
+	return Data::Dumper::Dumper($s->dump_parameters);
+}
+
 sub parse {
 	my $s		= shift;
 	my $f	  	= shift;
@@ -48,6 +55,27 @@ sub parse {
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
 }
 
+sub reset {
+	my $s	= shift;
+	my $index = shift;
+	my %def	  = (
+					'minfx' => '144',
+					'location' => '50',
+					'situation' => '70',
+					'maxfx' => '148',
+					'time' => '50',
+					'topology' => 256,
+					'eps' => '15',
+					'climate' => 5,
+					'sgm' => '0.00499999988824129',
+					'ens' => '301',
+					'pol' => 1,
+					'mdvar' => 0,
+					'hops' => 0
+				);
+	while (my ($k,$v) = each %def) { $s->$k($v) }
+	$s->name(sprintf('Net%3.3s', $index));
+}
 1;
 
 __END__

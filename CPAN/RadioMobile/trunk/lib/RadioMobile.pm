@@ -13,7 +13,7 @@ use File::Binary;
 use RadioMobile::Header;
 use RadioMobile::Units;
 use RadioMobile::Systems;
-use RadioMobile::Net;
+use RadioMobile::Nets;
 use RadioMobile::Cov;
 use RadioMobile::Config;
 
@@ -23,15 +23,17 @@ __PACKAGE__->valid_params(
 							header	=> { isa  => 'RadioMobile::Header'},
 							units	=> { isa  => 'RadioMobile::Units'},
 							systems	=> { isa  => 'RadioMobile::Systems'},
+							nets	=> { isa  => 'RadioMobile::Nets'},
 );
 
 __PACKAGE__->contained_objects(
 	'header'	=> 'RadioMobile::Header',
 	'units'		=> 'RadioMobile::Units',
 	'systems'	=> 'RadioMobile::Systems',
+	'nets'		=> 'RadioMobile::Nets',
 );
 
-use Class::MethodMaker [ scalar => [qw/file debug header units bfile systems/] ];
+use Class::MethodMaker [ scalar => [qw/file debug header units bfile systems nets /] ];
 
 our $VERSION	= 0.1;
 
@@ -65,6 +67,10 @@ sub parse {
 	# read systems
 	$s->systems->parse;
 	print $s->systems->dump if $s->debug;
+
+	# initialize nets (I need them in net_role structure)
+	$s->nets->reset;
+	print $s->nets->dump if $s->debug;
 
 
 # read net_role
@@ -136,14 +142,9 @@ foreach (0..$s->header->networkCount-1) {
 
 #print Data::Dumper::Dumper(\@netSystem);
 
-# read and unpack nets
-my @nets;
-foreach (1..$s->header->networkCount) {
-	my $net = new RadioMobile::Net;
-	$net->parse($s->bfile);
-	push @nets,$net;
-}
-#print Data::Dumper::Dumper(\@nets);
+# read nets
+$s->nets->parse;
+print $s->nets->dump if $s->debug;
 
 # read and unpack coverage
 my $cov = new RadioMobile::Cov;

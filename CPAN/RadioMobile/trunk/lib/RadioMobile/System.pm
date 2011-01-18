@@ -4,6 +4,8 @@ use 5.010000;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
@@ -41,6 +43,17 @@ sub parse {
 sub dump {
 	my $s	= shift;
 	return Data::Dumper::Dumper($s->dump_parameters);
+}
+
+sub reset {
+	my $s	= shift;
+	my $index = shift;
+	$s->tx(10);
+	$s->h(2);
+	$s->rx(-107);
+	$s->loss(0.5);
+	$s->ant(2);
+	$s->name(sprintf('System%4.4s', $index));
 }
 
 1;
