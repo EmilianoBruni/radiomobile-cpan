@@ -22,14 +22,16 @@ __PACKAGE__->valid_params(
 							debug 	=> { type => SCALAR, optional => 1, default => 0 },
 							header	=> { isa  => 'RadioMobile::Header'},
 							units	=> { isa  => 'RadioMobile::Units'},
+							systems	=> { isa  => 'RadioMobile::Systems'},
 );
 
 __PACKAGE__->contained_objects(
 	'header'	=> 'RadioMobile::Header',
 	'units'		=> 'RadioMobile::Units',
+	'systems'	=> 'RadioMobile::Systems',
 );
 
-use Class::MethodMaker [ scalar => [qw/file debug header units bfile/] ];
+use Class::MethodMaker [ scalar => [qw/file debug header units bfile systems/] ];
 
 our $VERSION	= 0.1;
 
@@ -49,6 +51,7 @@ sub parse {
 	my $UnitSystemLen		= sub { my $header = shift; 
 		return $header->systemCount * $header->unitCount };
 
+	# open binary .net file
 	$s->{bfile} = new File::Binary($s->file);
 
 	# read header
@@ -60,9 +63,8 @@ sub parse {
 	print $s->units->dump if $s->debug;
 
 	# read systems
-	my $systems	= new RadioMobile::Systems;
-	$systems->parse($s->bfile, $s->header->systemCount);
-	print $systems->dump if $s->debug;
+	$s->systems->parse;
+	print $s->systems->dump if $s->debug;
 
 
 # read net_role
