@@ -18,6 +18,8 @@ use RadioMobile::NetUnit;
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
+# non sono convinto di questa cosa...dovrebbe farlo gia' il new sopra
+	$s->SUPER::_init(@_);
 	return $s;
 }
 
@@ -78,10 +80,10 @@ sub parse {
 
 }
 
-sub dump {
-	my $s	= shift;
-	return Data::Dumper::Dumper($s->dump_parameters);
-}
+#sub dump {
+#	my $s	= shift;
+#	return Data::Dumper::Dumper($s->dump_parameters);
+#}
 
 
 1;
