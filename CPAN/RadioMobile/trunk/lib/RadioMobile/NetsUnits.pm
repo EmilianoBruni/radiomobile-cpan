@@ -59,9 +59,9 @@ sub parse {
 	}
 
 	# First extraxt network isIn
-	my @unitNetwork;
 	foreach my $netIdx (0..$h->networkCount-1) {
-		my @isInNetwork = [map {$_ > 127 ? 1 : 0} @{$netRole[$netIdx]}];
+		my @unitNetwork;
+		my @isInNetwork = map {$_ > 127 ? 1 : 0} @{$netRole[$netIdx]};
 		my $net	 = $s->container->nets->at($netIdx);
 		foreach my $unitIdx (0..$h->unitCount-1) {
 			my $unit = $s->container->units->at($unitIdx);
@@ -80,10 +80,18 @@ sub parse {
 
 }
 
-#sub dump {
-#	my $s	= shift;
-#	return Data::Dumper::Dumper($s->dump_parameters);
-#}
+sub dump {
+	my $s	= shift;
+	return $s->SUPER::dump unless (@_);
+	my $method = shift;
+	my $ret = '';
+	foreach (0..$s->rowsCount-1) {
+		my @row 	= $s->rows->at($_)->list;
+		my @func	= map {$_->$method} @row;
+		$ret .= '| ' . join(' | ',@func) . " |\n";
+	}
+	return $ret;
+}
 
 
 1;

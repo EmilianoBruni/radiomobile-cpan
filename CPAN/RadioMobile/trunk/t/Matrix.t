@@ -11,7 +11,7 @@ use Test::More tests => 13;
 BEGIN { use_ok('RadioMobile::Utils::Matrix') };
 
 my $m = new RadioMobile::Utils::Matrix;
-is($m->dump,"| 0 |\n","Check default matrix 1x1 (0)");
+is($m->dump,"","Check default matrix 0x0");
 
 $m = new RadioMobile::Utils::Matrix(rowsSize => 3, colsSize => 4);
 $res = "| 0 | 0 | 0 | 0 |\n| 0 | 0 | 0 | 0 |\n| 0 | 0 | 0 | 0 |\n";

@@ -79,6 +79,7 @@ sub parse {
 
 	# read net_role
 	$s->netsunits->parse;
+	print $s->netsunits->dump('isIn') if $s->debug;
 
 # NET_ROLE shows in which network is associated an unit
 # and its role (master/slave/node/terminal) 

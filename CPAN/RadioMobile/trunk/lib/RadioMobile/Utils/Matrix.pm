@@ -27,9 +27,9 @@ sub new {
 
 sub _init {
 	my $s	= shift;
-	$s->{rows} = new Array::AsObject(undef);
-	my $singleCell = new Array::AsObject(0);
-	$s->rows->set(0,$singleCell);
+	$s->{rows} = new Array::AsObject();
+	#my $singleCell = new Array::AsObject();
+	#$s->rows->set(0,$singleCell);
 	my %p = @_;
 	$s->rowsCount($p{rowsSize}) if ($p{rowsSize});
 	$s->colsCount($p{colsSize}) if ($p{colsSize});
@@ -97,7 +97,7 @@ sub colsCount {
 			}
 		}
 	}
-	return $s->rows->at(0)->length;
+	return $s->rows->length == 0 ? 0 : $s->rows->at(0)->length;
 }
 
 sub setRow {
