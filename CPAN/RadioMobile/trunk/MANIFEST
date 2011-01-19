@@ -9,6 +9,8 @@ lib/RadioMobile/System.pm
 lib/RadioMobile/Systems.pm
 lib/RadioMobile/Net.pm
 lib/RadioMobile/Nets.pm
+lib/RadioMobile/NetUnit.pm
+lib/RadioMobile/NetsUnits.pm
 lib/RadioMobile/Cov.pm
 lib/RadioMobile/Config.pm
 lib/RadioMobile/Unit.pm

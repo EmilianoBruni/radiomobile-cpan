@@ -14,6 +14,7 @@ use RadioMobile::Header;
 use RadioMobile::Units;
 use RadioMobile::Systems;
 use RadioMobile::Nets;
+use RadioMobile::NetsUnits;
 use RadioMobile::Cov;
 use RadioMobile::Config;
 
@@ -24,6 +25,8 @@ __PACKAGE__->valid_params(
 							units	=> { isa  => 'RadioMobile::Units'},
 							systems	=> { isa  => 'RadioMobile::Systems'},
 							nets	=> { isa  => 'RadioMobile::Nets'},
+							netsunits	=> { isa  => 'RadioMobile::NetsUnits'},
+
 );
 
 __PACKAGE__->contained_objects(
@@ -31,9 +34,10 @@ __PACKAGE__->contained_objects(
 	'units'		=> 'RadioMobile::Units',
 	'systems'	=> 'RadioMobile::Systems',
 	'nets'		=> 'RadioMobile::Nets',
+	'netsunits'	=> 'RadioMobile::NetsUnits',
 );
 
-use Class::MethodMaker [ scalar => [qw/file debug header units bfile systems nets /] ];
+use Class::MethodMaker [ scalar => [qw/file debug header units bfile systems nets netsunits/] ];
 
 our $VERSION	= 0.1;
 
@@ -73,7 +77,9 @@ sub parse {
 	print $s->nets->dump if $s->debug;
 
 
-# read net_role
+	# read net_role
+	$s->netsunits->parse;
+
 # NET_ROLE shows in which network is associated an unit
 # and its role (master/slave/node/terminal) 
 # it's a vector of byte with size $header->networkCount * $header->unitCount
@@ -95,25 +101,25 @@ sub parse {
 # Example: (\x00 first role, no belong, \x01 second role, no belong, 
 # \x80 (128) first role, belong to network, \x81 (129) first role, belong 
 
-my @netRole;
-$b = $s->bfile->get_bytes($NetRoleLen->($s->header));
-my $skip   = 'x[' . ($s->header->networkCount-1) .  ']';
-foreach (0..$s->header->networkCount-1) {
-	my $format = 'x[' . $_ . '](C' .  $skip . ')' . ($s->header->unitCount-1) .  'C'; 
-	push @netRole, [unpack($format,$b)];
-}
-
-# I prefer to split network belonger from network role
-my @unitNetwork;
-foreach my $item (@netRole) {
-	push @unitNetwork, [map {$_ > 127 ? 1 : 0} @$item] 
-}
-#print Data::Dumper::Dumper(\@unitNetwork);
-
-my @unitRole;
-foreach my $item (@netRole) {
-	push @unitRole, [map {$_ > 127 ? $_-128 : $_ } @$item] 
-}
+#my @netRole;
+#$b = $s->bfile->get_bytes($NetRoleLen->($s->header));
+#my $skip   = 'x[' . ($s->header->networkCount-1) .  ']';
+#foreach (0..$s->header->networkCount-1) {
+#	my $format = 'x[' . $_ . '](C' .  $skip . ')' . ($s->header->unitCount-1) .  'C'; 
+#	push @netRole, [unpack($format,$b)];
+#}
+#
+## I prefer to split network belonger from network role
+#my @unitNetwork;
+#foreach my $item (@netRole) {
+#	push @unitNetwork, [map {$_ > 127 ? 1 : 0} @$item] 
+#}
+##print Data::Dumper::Dumper(\@unitNetwork);
+#
+#my @unitRole;
+#foreach my $item (@netRole) {
+#	push @unitRole, [map {$_ > 127 ? $_-128 : $_ } @$item] 
+#}
 #print Data::Dumper::Dumper(\@unitRole);
 
 
