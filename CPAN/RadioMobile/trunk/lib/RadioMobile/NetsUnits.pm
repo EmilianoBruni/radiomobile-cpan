@@ -58,7 +58,7 @@ sub parse {
 		push @netRole, [unpack($format,$b)];
 	}
 
-	# First extraxt network isIn
+	# First generate NetUnit items and extract network isIn
 	foreach my $netIdx (0..$h->networkCount-1) {
 		my @unitNetwork;
 		my @isInNetwork = map {$_ > 127 ? 1 : 0} @{$netRole[$netIdx]};
@@ -73,6 +73,13 @@ sub parse {
 	}
 	
 	# now add Roles
+	foreach my $netIdx (0..$h->networkCount-1) {
+		foreach my $unitIdx (0..$h->unitCount-1) {
+			my $role = $netRole[$netIdx]->[$unitIdx];
+			$s->at($netIdx,$unitIdx)->role($role > 127 ? $role - 128 : $role);
+		}
+	}
+
 #my @unitRole;
 #foreach my $item (@netRole) {
 #push @unitRole, [map {$_ > 127 ? $_-128 : $_ } @$item] 
