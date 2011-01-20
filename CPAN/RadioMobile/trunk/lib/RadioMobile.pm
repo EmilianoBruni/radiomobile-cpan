@@ -12,6 +12,7 @@ use File::Binary;
 
 use RadioMobile::Header;
 use RadioMobile::Units;
+use RadioMobile::UnitsSystemParser;
 use RadioMobile::Systems;
 use RadioMobile::Nets;
 use RadioMobile::NetsUnits;
@@ -83,6 +84,14 @@ sub parse {
 	print "role: \n", $s->netsunits->dump('role') if $s->debug;
 
 # read net system
+my $ns = new RadioMobile::UnitsSystemParser(
+										bfile 		=> $s->bfile,
+										header		=> $s->header,
+										netsunits 	=> $s->netsunits
+									);
+$ns->parse;
+print "system: \n", $s->netsunits->dump('system') if $s->debug;
+
 # NET_SYSTEM shows what's the system of every units in every network
 # the system is a short unsigned integer identifing the index of system element
 # it's a vector of short with size $header->networkCount * $header->unitCount * 2
@@ -97,13 +106,13 @@ sub parse {
 #   [A3 B3 C3 ... ]
 # ]
 # like _NetData.csv
-my @netSystem;
-my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
-$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
-foreach (0..$s->header->networkCount-1) {
-	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  's'; 
-	push @netSystem, [unpack($format,$b)];
-}
+#my @netSystem;
+#my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
+#$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
+#foreach (0..$s->header->networkCount-1) {
+#	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  's'; 
+#	push @netSystem, [unpack($format,$b)];
+#}
 
 #print Data::Dumper::Dumper(\@netSystem);
 
@@ -217,7 +226,7 @@ print Data::Dumper::Dumper(\@systemsAntenna);
 # ]
 # like _NetData.csv
 my @antennaAzimut;
-$skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
+my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
 $b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
 foreach (0..$s->header->networkCount-1) {
 	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  'S'; 
