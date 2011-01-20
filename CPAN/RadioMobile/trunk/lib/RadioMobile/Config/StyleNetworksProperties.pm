@@ -1,4 +1,4 @@
-package RadioMobile::Config;
+package RadioMobile::Config::StyleNetworksProperties;
 
 use 5.010000;
 use strict;
