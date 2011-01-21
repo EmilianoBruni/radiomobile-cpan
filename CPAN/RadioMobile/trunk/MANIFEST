@@ -17,6 +17,7 @@ lib/RadioMobile/Config.pm
 lib/RadioMobile/Config/StyleNetworksProperties.pm
 lib/RadioMobile/Config/StyleNetworksPropertiesParser.pm
 lib/RadioMobile/Config/MapFileParser.pm
+lib/RadioMobile/Config/Pictures.pm
 lib/RadioMobile/Unit.pm
 lib/RadioMobile/Units.pm
 lib/RadioMobile/UnitsSystemParser.pm

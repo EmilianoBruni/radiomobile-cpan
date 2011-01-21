@@ -106,23 +106,10 @@ sub parse {
 	# lettura del percorso al file map
 	$s->config->parse_mapfilepath;
 	print "Map file path: " . $s->config->mapfilepath . "\n" if $s->debug;
-#my $l = unpack("s",$s->bfile->get_bytes(2));
-#my $map_file = '';
-#if ($l > 0) {
-#	$map_file = unpack("A$l",$s->bfile->get_bytes($l));
-#}
 
-# lettura dei percorsi delle picture da caricare
-unless(eof($s->bfile->{_fh})) {
-	# forse carica le pictures
-	my $l = unpack("s",$s->bfile->get_bytes(2));
-	while ($l > 0) {
-		my $pic_file = $s->bfile->get_bytes($l);
-		# process pic_file: TO DO!!!???
-		$l = unpack("s",$s->bfile->get_bytes(2));
-	}
-}
-
+	# lettura dei percorsi delle picture da caricare
+	$s->config->pictures->parse;
+	print "PICTURES: " . $s->config->pictures->dump . "\n" if $s->debug;
 
 # read net_h 
 # NET_HEIGHT shows the height of every units in every network. If height is 0

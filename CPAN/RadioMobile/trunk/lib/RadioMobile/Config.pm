@@ -11,16 +11,20 @@ use base qw(Class::Container);
 use RadioMobile::Config::StyleNetworksProperties;
 use RadioMobile::Config::MapFileParser;
 use RadioMobile::Config::StyleNetworksPropertiesParser;
+use RadioMobile::Config::Pictures;
 
 __PACKAGE__->valid_params(
 							stylenetworksproperties	=> { isa  =>
 								'RadioMobile::Config::StyleNetworksProperties'},
+							pictures	=> { isa  => 'RadioMobile::Config::Pictures'},
 );
 __PACKAGE__->contained_objects(
 	stylenetworksproperties => 'RadioMobile::Config::StyleNetworksProperties',
+	pictures => 'RadioMobile::Config::Pictures',
 );
 
-use Class::MethodMaker [ scalar => [qw/stylenetworksproperties mapfilepath/] ];
+use Class::MethodMaker [ scalar => [qw/stylenetworksproperties mapfilepath
+	pictures/] ];
 
 sub new {
 	my $package = shift;
