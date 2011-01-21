@@ -1,142 +1,125 @@
-package RadioMobile;
+	package RadioMobile;
 
-use 5.010000;
-use strict;
-use warnings;
+	use 5.010000;
+	use strict;
+	use warnings;
 
-use Class::Container;
-use Params::Validate qw(:types);
-use base qw(Class::Container);
+	use Class::Container;
+	use Params::Validate qw(:types);
+	use base qw(Class::Container);
 
-use File::Binary;
+	use File::Binary;
 
-use RadioMobile::Header;
-use RadioMobile::Units;
-use RadioMobile::UnitsSystemParser;
-use RadioMobile::Systems;
-use RadioMobile::Nets;
-use RadioMobile::NetsUnits;
-use RadioMobile::Cov;
-use RadioMobile::Config;
+	use RadioMobile::Header;
+	use RadioMobile::Units;
+	use RadioMobile::UnitsSystemParser;
+	use RadioMobile::UnitsHeightParser;
+	use RadioMobile::Systems;
+	use RadioMobile::Nets;
+	use RadioMobile::NetsUnits;
+	use RadioMobile::Cov;
+	use RadioMobile::Config;
 
-__PACKAGE__->valid_params(
-							file 	=> { type => SCALAR, optional => 1 },
-							debug 	=> { type => SCALAR, optional => 1, default => 0 },
-							header	=> { isa  => 'RadioMobile::Header'},
-							units	=> { isa  => 'RadioMobile::Units'},
-							systems	=> { isa  => 'RadioMobile::Systems'},
-							nets	=> { isa  => 'RadioMobile::Nets'},
-							netsunits	=> { isa  => 'RadioMobile::NetsUnits'},
-							config	=> { isa  => 'RadioMobile::Config'},
+	__PACKAGE__->valid_params(
+								file 	=> { type => SCALAR, optional => 1 },
+								debug 	=> { type => SCALAR, optional => 1, default => 0 },
+								header	=> { isa  => 'RadioMobile::Header'},
+								units	=> { isa  => 'RadioMobile::Units'},
+								systems	=> { isa  => 'RadioMobile::Systems'},
+								nets	=> { isa  => 'RadioMobile::Nets'},
+								netsunits	=> { isa  => 'RadioMobile::NetsUnits'},
+								config	=> { isa  => 'RadioMobile::Config'},
 
-);
+	);
 
-__PACKAGE__->contained_objects(
-	'header'	=> 'RadioMobile::Header',
-	'units'		=> 'RadioMobile::Units',
-	'systems'	=> 'RadioMobile::Systems',
-	'nets'		=> 'RadioMobile::Nets',
-	'netsunits'	=> 'RadioMobile::NetsUnits',
-	'config'	=> 'RadioMobile::Config',
-);
+	__PACKAGE__->contained_objects(
+		'header'	=> 'RadioMobile::Header',
+		'units'		=> 'RadioMobile::Units',
+		'systems'	=> 'RadioMobile::Systems',
+		'nets'		=> 'RadioMobile::Nets',
+		'netsunits'	=> 'RadioMobile::NetsUnits',
+		'config'	=> 'RadioMobile::Config',
+	);
 
-use Class::MethodMaker [ scalar => [qw/file debug header units 
-	bfile systems nets netsunits config/] ];
+	use Class::MethodMaker [ scalar => [qw/file debug header units 
+		bfile systems nets netsunits config/] ];
 
-our $VERSION	= 0.1;
+	our $VERSION	= 0.1;
 
-sub new {
-	my $proto 	= shift;
-	my $self	= $proto->SUPER::new(@_);
-	return $self;
-}
-
-
-sub parse {
-	my $s = shift;
-	# NET ROLE STRUCTURE
-	my $NetRoleLen		= sub { my $header = shift; 
-		return $header->networkCount * $header->unitCount };
-	# NET SYSTEM STRUCTURE
-	my $UnitSystemLen		= sub { my $header = shift; 
-		return $header->systemCount * $header->unitCount };
-
-	# open binary .net file
-	$s->{bfile} = new File::Binary($s->file);
-
-	# read header
-	$s->header->parse;
-	print $s->header->dump if $s->debug;
-
-	# read units
-	$s->units->parse;
-	print $s->units->dump if $s->debug;
-
-	# read systems
-	$s->systems->parse;
-	print $s->systems->dump if $s->debug;
-
-	# initialize nets (I need them in net_role structure)
-	$s->nets->reset;
-	#print $s->nets->dump if $s->debug;
+	sub new {
+		my $proto 	= shift;
+		my $self	= $proto->SUPER::new(@_);
+		return $self;
+	}
 
 
-	# read net_role
-	$s->netsunits->parse;
-	print "isIn: \n", $s->netsunits->dump('isIn') if $s->debug;
-	print "role: \n", $s->netsunits->dump('role') if $s->debug;
+	sub parse {
+		my $s = shift;
+		# NET ROLE STRUCTURE
+		my $NetRoleLen		= sub { my $header = shift; 
+			return $header->networkCount * $header->unitCount };
+		# NET SYSTEM STRUCTURE
+		my $UnitSystemLen		= sub { my $header = shift; 
+			return $header->systemCount * $header->unitCount };
 
-	# read system for units in nets
-	my $ns = new RadioMobile::UnitsSystemParser(
-										bfile 		=> $s->bfile,
-										header		=> $s->header,
-										netsunits 	=> $s->netsunits
-									);
-	$ns->parse;
-	print "system: \n", $s->netsunits->dump('system') if $s->debug;
+		# open binary .net file
+		$s->{bfile} = new File::Binary($s->file);
 
-	# read nets
-	$s->nets->parse;
-	print $s->nets->dump if $s->debug;
+		# read header
+		$s->header->parse;
+		print $s->header->dump if $s->debug;
 
-	# read and unpack coverage
-	my $cov = new RadioMobile::Cov;
-	$cov->parse($s->bfile);
+		# read units
+		$s->units->parse;
+		print $s->units->dump if $s->debug;
 
-	# lettura del percorso al file map
-	$s->config->parse_mapfilepath;
-	print "Map file path: " . $s->config->mapfilepath . "\n" if $s->debug;
+		# read systems
+		$s->systems->parse;
+		print $s->systems->dump if $s->debug;
 
-	# lettura dei percorsi delle picture da caricare
-	$s->config->pictures->parse;
-	print "PICTURES: " . $s->config->pictures->dump . "\n" if $s->debug;
-
-# read net_h 
-# NET_HEIGHT shows the height of every units in every network. If height is 0
-# then default system height has taken
-# it's a vector of  float signed integer
-# with size $header->networkCount * $header->unitCount * 4
-# Given A,B,C... units and 1,2,3 Network so A1 is a float 
-# indicate the height of unit A in network 1 
-# It's structure is 
-# A1 A2 A3 ... B1 B2 B3 ... C1 C2 C3 ...
-# The following code traslate this in a AoA with this structure
-# [ 
-#   [A1 B1 C1 ... ] 
-#   [A2 B2 C2 ....] 
-#   [A3 B3 C3 ... ]
-# ]
-# like _NetData.csv
-my @netHeight;
-my $skip4   = 'x[' . ($s->header->networkCount-1)*4 .  ']';
-$b = $s->bfile->get_bytes( 4 * $NetRoleLen->($s->header)) unless(eof($s->bfile->{_fh}));
-foreach (0..$s->header->networkCount-1) {
-	my $format = 'x[' . $_ * 4  . '](f' .  $skip4 . ')' . ($s->header->unitCount-1) .  's'; 
-	push @netHeight, [unpack($format,$b)];
-}
-#print Data::Dumper::Dumper(\@netHeight);
+		# initialize nets (I need them in net_role structure)
+		$s->nets->reset;
+		#print $s->nets->dump if $s->debug;
 
 
+		# read net_role
+		$s->netsunits->parse;
+		print "isIn: \n", $s->netsunits->dump('isIn') if $s->debug;
+		print "role: \n", $s->netsunits->dump('role') if $s->debug;
+
+		# read system for units in nets
+		my $ns = new RadioMobile::UnitsSystemParser(
+											bfile 		=> $s->bfile,
+											header		=> $s->header,
+											netsunits 	=> $s->netsunits
+										);
+		$ns->parse;
+		print "system: \n", $s->netsunits->dump('system') if $s->debug;
+
+		# read nets
+		$s->nets->parse;
+		print $s->nets->dump if $s->debug;
+
+		# read and unpack coverage
+		my $cov = new RadioMobile::Cov;
+		$cov->parse($s->bfile);
+
+		# lettura del percorso al file map
+		$s->config->parse_mapfilepath;
+		print "Map file path: " . $s->config->mapfilepath . "\n" if $s->debug;
+
+		# lettura dei percorsi delle picture da caricare
+		$s->config->pictures->parse;
+		print "PICTURES: " . $s->config->pictures->dump . "\n" if $s->debug;
+
+		# read net_h 
+		my $hp = new RadioMobile::UnitsHeightParser(
+											bfile 		=> $s->bfile,
+											header		=> $s->header,
+											netsunits 	=> $s->netsunits
+										);
+		$hp->parse;
+		print "height: \n", $s->netsunits->dump('height') if $s->debug;
 
 # UNIT_ICON
 # a vector of byte with icon index base-0 of every units

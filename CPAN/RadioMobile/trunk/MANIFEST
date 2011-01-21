@@ -21,4 +21,5 @@ lib/RadioMobile/Config/Pictures.pm
 lib/RadioMobile/Unit.pm
 lib/RadioMobile/Units.pm
 lib/RadioMobile/UnitsSystemParser.pm
+lib/RadioMobile/UnitsHeightParser.pm
 lib/RadioMobile/Utils/Matrix.pm

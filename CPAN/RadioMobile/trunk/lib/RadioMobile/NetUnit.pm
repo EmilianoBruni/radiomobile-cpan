@@ -17,7 +17,7 @@ __PACKAGE__->contained_objects(
 	'net'	=> 'RadioMobile::Net',
 );
 
-use Class::MethodMaker [ scalar => [qw/unit net isIn role system/] ];
+use Class::MethodMaker [ scalar => [qw/unit net isIn role system height/] ];
 
 sub new {
 	my $package = shift;
