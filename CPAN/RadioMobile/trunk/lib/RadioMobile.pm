@@ -18,6 +18,7 @@ use RadioMobile::Nets;
 use RadioMobile::NetsUnits;
 use RadioMobile::Cov;
 use RadioMobile::Config;
+use RadioMobile::Config::StyleNetworksPropertiesParser;
 
 __PACKAGE__->valid_params(
 							file 	=> { type => SCALAR, optional => 1 },
@@ -27,6 +28,7 @@ __PACKAGE__->valid_params(
 							systems	=> { isa  => 'RadioMobile::Systems'},
 							nets	=> { isa  => 'RadioMobile::Nets'},
 							netsunits	=> { isa  => 'RadioMobile::NetsUnits'},
+							config	=> { isa  => 'RadioMobile::Config'},
 
 );
 
@@ -36,9 +38,11 @@ __PACKAGE__->contained_objects(
 	'systems'	=> 'RadioMobile::Systems',
 	'nets'		=> 'RadioMobile::Nets',
 	'netsunits'	=> 'RadioMobile::NetsUnits',
+	'config'	=> 'RadioMobile::Config',
 );
 
-use Class::MethodMaker [ scalar => [qw/file debug header units bfile systems nets netsunits/] ];
+use Class::MethodMaker [ scalar => [qw/file debug header units 
+	bfile systems nets netsunits config/] ];
 
 our $VERSION	= 0.1;
 
@@ -83,7 +87,7 @@ sub parse {
 	print "isIn: \n", $s->netsunits->dump('isIn') if $s->debug;
 	print "role: \n", $s->netsunits->dump('role') if $s->debug;
 
-# read net system
+# read system for units in nets
 my $ns = new RadioMobile::UnitsSystemParser(
 										bfile 		=> $s->bfile,
 										header		=> $s->header,
@@ -91,30 +95,6 @@ my $ns = new RadioMobile::UnitsSystemParser(
 									);
 $ns->parse;
 print "system: \n", $s->netsunits->dump('system') if $s->debug;
-
-# NET_SYSTEM shows what's the system of every units in every network
-# the system is a short unsigned integer identifing the index of system element
-# it's a vector of short with size $header->networkCount * $header->unitCount * 2
-# Given A,B,C... units and 1,2,3 Network so A1 is a short 
-# indicate the system index of unit A in network 1 
-# It's structure is 
-# A1 A2 A3 ... B1 B2 B3 ... C1 C2 C3 ...
-# The following code traslate this in a AoA with this structure
-# [ 
-#   [A1 B1 C1 ... ] 
-#   [A2 B2 C2 ....] 
-#   [A3 B3 C3 ... ]
-# ]
-# like _NetData.csv
-#my @netSystem;
-#my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
-#$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
-#foreach (0..$s->header->networkCount-1) {
-#	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  's'; 
-#	push @netSystem, [unpack($format,$b)];
-#}
-
-#print Data::Dumper::Dumper(\@netSystem);
 
 # read nets
 $s->nets->parse;
@@ -185,9 +165,14 @@ my @lineLossPerMeter = unpack("f" . $s->header->systemCount,$b);
 #print Data::Dumper::Dumper(\@lineLossPerMeter);
 
 # parse config elements (currently only Style Networks properties)
-my $config = new RadioMobile::Config();
+my $config = new RadioMobile::Config::StyleNetworksPropertiesParser(
+								bfile 	=> $s->bfile,
+								stylenetworksproperties => 
+									$s->config->stylenetworksproperties
+																
+);
 $config->parse($s->bfile);
-#print Data::Dumper::Dumper($config);
+print "Style Network Properties: " . $s->config->stylenetworksproperties->dump if $s->debug;
 
 
 # a short integer set how much structure follows for

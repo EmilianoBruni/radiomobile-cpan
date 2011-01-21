@@ -16,8 +16,6 @@ __PACKAGE__->valid_params(
 
 use Class::MethodMaker [ scalar => [qw/header netsunits bfile/] ];
 
-use RadioMobile::NetUnit;
-
 =head1 NAME
 
 RadioMobile::UnitsSystemsParses

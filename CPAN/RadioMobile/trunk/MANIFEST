@@ -13,6 +13,9 @@ lib/RadioMobile/NetUnit.pm
 lib/RadioMobile/NetsUnits.pm
 lib/RadioMobile/Cov.pm
 lib/RadioMobile/Config.pm
+lib/RadioMobile/Config.pm
+lib/RadioMobile/Config/StyleNetworksProperties.pm
+lib/RadioMobile/Config/StyleNetworksPropertiesParser.pm
 lib/RadioMobile/Unit.pm
 lib/RadioMobile/Units.pm
 lib/RadioMobile/UnitsSystemParser.pm
