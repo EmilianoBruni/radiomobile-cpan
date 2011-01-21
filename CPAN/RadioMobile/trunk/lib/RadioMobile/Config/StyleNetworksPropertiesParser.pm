@@ -11,11 +11,10 @@ use base qw(Class::Container);
 
 __PACKAGE__->valid_params( 
 							bfile	=> {isa => 'File::Binary'},
-							stylenetworksproperties => {isa =>
-								'RadioMobile::Config::StyleNetworksProperties'},
+							config => {isa => 'RadioMobile::Config'},
 );
 
-use Class::MethodMaker [scalar => [qw/bfile stylenetworksproperties/] ];
+use Class::MethodMaker [scalar => [qw/bfile config/] ];
 
 # This module parse/generate
 # a block of configuration elements. It seems it's 23 bytes long
@@ -47,11 +46,6 @@ use Class::MethodMaker [scalar => [qw/bfile stylenetworksproperties/] ];
 use constant LEN	=> 23;
 use constant PACK	=> 'H2H2H2H2';
 
-sub stylenetworksproperties {
-	my $s = shift;
-	return $s->{stylenetworksproperties};
-}
-
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
@@ -62,7 +56,7 @@ sub parse {
 	my $s		= shift;
 
 	my $f	  	= $s->bfile;
-	my $snp		= $s->stylenetworksproperties;
+	my $snp		= $s->config->stylenetworksproperties;
 
 	my @struct 	= unpack(PACK,$f->get_bytes(LEN));
 

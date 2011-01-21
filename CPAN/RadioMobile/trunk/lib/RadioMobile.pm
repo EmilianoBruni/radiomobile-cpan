@@ -18,7 +18,6 @@ use RadioMobile::Nets;
 use RadioMobile::NetsUnits;
 use RadioMobile::Cov;
 use RadioMobile::Config;
-use RadioMobile::Config::StyleNetworksPropertiesParser;
 
 __PACKAGE__->valid_params(
 							file 	=> { type => SCALAR, optional => 1 },
@@ -79,7 +78,7 @@ sub parse {
 
 	# initialize nets (I need them in net_role structure)
 	$s->nets->reset;
-	print $s->nets->dump if $s->debug;
+	#print $s->nets->dump if $s->debug;
 
 
 	# read net_role
@@ -87,35 +86,36 @@ sub parse {
 	print "isIn: \n", $s->netsunits->dump('isIn') if $s->debug;
 	print "role: \n", $s->netsunits->dump('role') if $s->debug;
 
-# read system for units in nets
-my $ns = new RadioMobile::UnitsSystemParser(
+	# read system for units in nets
+	my $ns = new RadioMobile::UnitsSystemParser(
 										bfile 		=> $s->bfile,
 										header		=> $s->header,
 										netsunits 	=> $s->netsunits
 									);
-$ns->parse;
-print "system: \n", $s->netsunits->dump('system') if $s->debug;
+	$ns->parse;
+	print "system: \n", $s->netsunits->dump('system') if $s->debug;
 
-# read nets
-$s->nets->parse;
-print $s->nets->dump if $s->debug;
+	# read nets
+	$s->nets->parse;
+	print $s->nets->dump if $s->debug;
 
-# read and unpack coverage
-my $cov = new RadioMobile::Cov;
-$cov->parse($s->bfile);
-#print Data::Dumper::Dumper($cov);
+	# read and unpack coverage
+	my $cov = new RadioMobile::Cov;
+	$cov->parse($s->bfile);
 
-# lettura del percorso al file map
-my $l = unpack("s",$s->bfile->get_bytes(2));
-my $map_file = '';
-if ($l > 0) {
-	$map_file = unpack("A$l",$s->bfile->get_bytes($l));
-}
+	# lettura del percorso al file map
+	$s->config->parse_mapfilepath;
+	print "Map file path: " . $s->config->mapfilepath . "\n" if $s->debug;
+#my $l = unpack("s",$s->bfile->get_bytes(2));
+#my $map_file = '';
+#if ($l > 0) {
+#	$map_file = unpack("A$l",$s->bfile->get_bytes($l));
+#}
 
 # lettura dei percorsi delle picture da caricare
 unless(eof($s->bfile->{_fh})) {
 	# forse carica le pictures
-	$l = unpack("s",$s->bfile->get_bytes(2));
+	my $l = unpack("s",$s->bfile->get_bytes(2));
 	while ($l > 0) {
 		my $pic_file = $s->bfile->get_bytes($l);
 		# process pic_file: TO DO!!!???
@@ -164,14 +164,8 @@ $b = $s->bfile->get_bytes( 4 * $s->header->systemCount) unless(eof($s->bfile->{_
 my @lineLossPerMeter = unpack("f" . $s->header->systemCount,$b);
 #print Data::Dumper::Dumper(\@lineLossPerMeter);
 
-# parse config elements (currently only Style Networks properties)
-my $config = new RadioMobile::Config::StyleNetworksPropertiesParser(
-								bfile 	=> $s->bfile,
-								stylenetworksproperties => 
-									$s->config->stylenetworksproperties
-																
-);
-$config->parse($s->bfile);
+# parse Style Networks properties
+$s->config->parse_stylenetworks;
 print "Style Network Properties: " . $s->config->stylenetworksproperties->dump if $s->debug;
 
 
