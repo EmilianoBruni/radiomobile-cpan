@@ -16,6 +16,7 @@
 	use RadioMobile::UnitsSystemParser;
 	use RadioMobile::UnitsHeightParser;
 	use RadioMobile::Systems;
+	use RadioMobile::SystemCableLossParser;
 	use RadioMobile::Nets;
 	use RadioMobile::NetsUnits;
 	use RadioMobile::Cov;
@@ -127,11 +128,10 @@
 		$up->parse;
 		print "UNITS with ICONS: \n", $s->units->dump if $s->debug;
 
-# ADDITIONAL_CABLE_LOSS
-# a vector of float with additional cable loss for every system
-$b = $s->bfile->get_bytes( 4 * $s->header->systemCount) unless(eof($s->bfile->{_fh}));
-my @lineLossPerMeter = unpack("f" . $s->header->systemCount,$b);
-#print Data::Dumper::Dumper(\@lineLossPerMeter);
+		# system cable loss
+		my $cp = new RadioMobile::SystemCableLossParser(parent => $s);
+		$cp->parse;
+		print "SYSTEMS with CABLE LOSS: \n", $s->systems->dump if $s->debug;
 
 # parse Style Networks properties
 $s->config->parse_stylenetworks;

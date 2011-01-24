@@ -22,7 +22,7 @@ use File::Binary;
 
 use constant LEN	=> 50;
 use constant PACK	=> 'fffffA30';
-use constant ITEMS	=> qw/tx rx loss ant h name/;
+use constant ITEMS	=> qw/tx rx loss ant h name cableloss/;
 
 __PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
 use Class::MethodMaker [scalar => [ITEMS]];
@@ -53,6 +53,7 @@ sub reset {
 	$s->rx(-107);
 	$s->loss(0.5);
 	$s->ant(2);
+	$s->cableloss(0);
 	$s->name(sprintf('System%4.4s', $index));
 }
 
