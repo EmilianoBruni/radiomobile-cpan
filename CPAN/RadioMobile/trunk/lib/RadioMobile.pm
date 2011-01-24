@@ -12,6 +12,7 @@
 
 	use RadioMobile::Header;
 	use RadioMobile::Units;
+	use RadioMobile::UnitIconParser;
 	use RadioMobile::UnitsSystemParser;
 	use RadioMobile::UnitsHeightParser;
 	use RadioMobile::Systems;
@@ -121,12 +122,10 @@
 		$hp->parse;
 		print "height: \n", $s->netsunits->dump('height') if $s->debug;
 
-# UNIT_ICON
-# a vector of byte with icon index base-0 of every units
-$b = $s->bfile->get_bytes( $s->header->unitCount) unless(eof($s->bfile->{_fh})); 
-my @unitIcon = unpack('c' x $s->header->unitCount,$b);
-#print Data::Dumper::Dumper(\@unitIcon);
-
+		# unit icon
+		my $up = new RadioMobile::UnitIconParser(parent => $s);
+		$up->parse;
+		print "UNITS with ICONS: \n", $s->units->dump if $s->debug;
 
 # ADDITIONAL_CABLE_LOSS
 # a vector of float with additional cable loss for every system

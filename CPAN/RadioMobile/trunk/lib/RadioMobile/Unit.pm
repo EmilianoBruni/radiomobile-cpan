@@ -21,7 +21,8 @@ use File::Binary;
 # NAME              ([A] ASCII string - VB String*20 - 20 bytes),
 use constant LEN	=> 44;
 use constant PACK	=> 'fffssllA20';
-use constant ITEMS	=> qw/lon lat h enabled transparent forecolor backcolor name/;
+use constant ITEMS	=> qw/lon lat h enabled transparent forecolor 
+							backcolor name icon/;
 
 __PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
 use Class::MethodMaker [scalar => [ITEMS]];
@@ -29,6 +30,7 @@ use Class::MethodMaker [scalar => [ITEMS]];
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
+	$s->icon(0);
 	return $s;
 }
 
