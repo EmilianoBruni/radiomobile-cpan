@@ -133,9 +133,10 @@
 		$cp->parse;
 		print "SYSTEMS with CABLE LOSS: \n", $s->systems->dump if $s->debug;
 
-# parse Style Networks properties
-$s->config->parse_stylenetworks;
-print "Style Network Properties: " . $s->config->stylenetworksproperties->dump if $s->debug;
+		# parse Style Networks properties
+		$s->config->parse_stylenetworks;
+		print "Style Network Properties: " . 
+					$s->config->stylenetworksproperties->dump if $s->debug;
 
 
 # a short integer set how much structure follows for
