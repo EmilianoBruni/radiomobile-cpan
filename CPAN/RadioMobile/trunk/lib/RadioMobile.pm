@@ -13,6 +13,7 @@
 	use RadioMobile::Header;
 	use RadioMobile::Units;
 	use RadioMobile::UnitIconParser;
+	use RadioMobile::UnitUnknown1Parser;
 	use RadioMobile::UnitsSystemParser;
 	use RadioMobile::UnitsHeightParser;
 	use RadioMobile::UnitsAzimutDirectionParser;
@@ -158,49 +159,11 @@
 		$ad->parse;
 		print "Azimut: \n", $s->netsunits->dump('azimut') if $s->debug;
 		print "Direction: \n", $s->netsunits->dump('direction') if $s->debug;
-# AZIMUT_ANTENNAS shows the azimut of every antenna in every networks
-# the azimut is a short unsigned integer identifing it's value power by ten
-# If it's value is greater than 10.000, it's not a azimut value but it's the
-# direcion by unit which index is the field value - 10000
-# Given A,B,C... units and 1,2,3 Network so A1 is a short 
-# indicate the azimut value.
-# It's structure is 
-# A1 A2 A3 ... B1 B2 B3 ... C1 C2 C3 ...
-# The following code traslate this in a AoA with this structure
-# [ 
-#   [A1 B1 C1 ... ] 
-#   [A2 B2 C2 ....] 
-#   [A3 B3 C3 ... ]
-# ]
-# like _NetData.csv
-#my @antennaAzimut;
-#my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
-#$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
-#foreach (0..$s->header->networkCount-1) {
-#	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  'S'; 
-#	my @net;
-#	my @azimut = unpack($format,$b);
-#	foreach my $azimut (@azimut) {
-#		my $unitDirection = 0;
-#		if ($azimut > 10000) {
-#			$unitDirection = $azimut - 10000;
-#			$azimut = 0;
-#		} else {
-#			$azimut /= 10;
-#		}
-#		push @net, {azimut => $azimut, direction => $unitDirection}
-#	}
-#	push @antennaAzimut, \@net;
-#}
 
-# a short integer set how much structure follows.
-# currently there are unknown elements
-$b = $s->bfile->get_bytes(2);
-my $format = "s";
-my $unknowsCount = unpack($format,$b);
-$b = $s->bfile->get_bytes($unknowsCount*2);
-my @unknownElements = unpack($format x $unknowsCount,$b);
-print Data::Dumper::Dumper(\@unknownElements);
+		# read unknown units property
+		my $uu = new RadioMobile::UnitUnknown1Parser(parent => $s);
+		$uu->parse;
+		print "UNITS after unknown1 structure: " .  $s->units->dump if $s->debug;
 
 # a short integer set how much network enabled in ElevationAngle
 $b = $s->bfile->get_bytes(2);
