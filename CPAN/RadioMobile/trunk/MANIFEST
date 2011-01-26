@@ -7,6 +7,7 @@ lib/RadioMobile.pm
 lib/RadioMobile/Header.pm
 lib/RadioMobile/System.pm
 lib/RadioMobile/SystemCableLossParser.pm
+lib/RadioMobile/SystemAntennaParser.pm
 lib/RadioMobile/Systems.pm
 lib/RadioMobile/Net.pm
 lib/RadioMobile/Nets.pm

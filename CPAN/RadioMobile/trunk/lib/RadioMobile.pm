@@ -17,6 +17,7 @@
 	use RadioMobile::UnitsHeightParser;
 	use RadioMobile::Systems;
 	use RadioMobile::SystemCableLossParser;
+	use RadioMobile::SystemAntennaParser;
 	use RadioMobile::Nets;
 	use RadioMobile::NetsUnits;
 	use RadioMobile::Cov;
@@ -138,24 +139,10 @@
 		print "Style Network Properties: " . 
 					$s->config->stylenetworksproperties->dump if $s->debug;
 
-
-# a short integer set how much structure follows for
-# system antenna type (0 == omni.ant)
-$b = $s->bfile->get_bytes(2) unless(eof($s->bfile->{_fh}));
-my $format = "s";
-my $systemAntennaCount = unpack($format,$b);
-my @systemsAntenna;
-foreach (1..$systemAntennaCount) {
-	$b = $s->bfile->get_bytes(2);
-	my $antennaLenght = unpack($format,$b);
-	unless ($antennaLenght == 0) {
-		$b = $s->bfile->get_bytes($antennaLenght);
-		push @systemsAntenna,unpack("a" . $antennaLenght,$b)
-	} else {
-		push @systemsAntenna,'';
-	}
-}
-print Data::Dumper::Dumper(\@systemsAntenna);
+		# parse system antenna
+		my $ap = new RadioMobile::SystemAntennaParser(parent => $s);
+		$ap->parse;
+		print "SYSTEMS with Antenna: \n", $s->systems->dump if $s->debug;
 
 
 # read azimut antenas

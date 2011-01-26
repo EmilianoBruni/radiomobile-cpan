@@ -22,7 +22,7 @@ use File::Binary;
 
 use constant LEN	=> 50;
 use constant PACK	=> 'fffffA30';
-use constant ITEMS	=> qw/tx rx loss ant h name cableloss/;
+use constant ITEMS	=> qw/tx rx loss ant h name cableloss antenna/;
 
 __PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
 use Class::MethodMaker [scalar => [ITEMS]];
