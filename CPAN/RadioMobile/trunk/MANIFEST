@@ -24,6 +24,7 @@ lib/RadioMobile/Config/Pictures.pm
 lib/RadioMobile/Unit.pm
 lib/RadioMobile/UnitIconParser.pm
 lib/RadioMobile/UnitsAzimutDirectionParser.pm
+lib/RadioMobile/UnitsElevationParser.pm
 lib/RadioMobile/Units.pm
 lib/RadioMobile/UnitsSystemParser.pm
 lib/RadioMobile/UnitsHeightParser.pm

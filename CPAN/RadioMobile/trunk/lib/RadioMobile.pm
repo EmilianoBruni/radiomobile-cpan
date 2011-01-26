@@ -17,6 +17,7 @@
 	use RadioMobile::UnitsSystemParser;
 	use RadioMobile::UnitsHeightParser;
 	use RadioMobile::UnitsAzimutDirectionParser;
+	use RadioMobile::UnitsElevationParser;
 	use RadioMobile::Systems;
 	use RadioMobile::SystemCableLossParser;
 	use RadioMobile::SystemAntennaParser;
@@ -165,28 +166,33 @@
 		$uu->parse;
 		print "UNITS after unknown1 structure: " .  $s->units->dump if $s->debug;
 
+		# read elevation antenas
+		my $ep = new RadioMobile::UnitsElevationParser(parent => $s);
+		$ep->parse;
+		print "Elevation: \n", $s->netsunits->dump('elevation') if $s->debug;
+
 # a short integer set how much network enabled in ElevationAngle
-$b = $s->bfile->get_bytes(2);
-my $format = "s";
-my $antennaNetworkCount = unpack($format,$b);
-# a short integer set how much units enabled in ElevationAngle
-$b = $s->bfile->get_bytes(2);
-my $format = "s";
-my $antennaUnitsCount = unpack($format,$b);
-my @antennaElevation;
-$b = $s->bfile->get_bytes($antennaNetworkCount * 2 * $antennaUnitsCount);
-my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
-foreach (0..$antennaNetworkCount-1) {
-	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($antennaUnitsCount-1) .  'S'; 
-	my @net;
-	my @elevation = unpack($format,$b);
-	foreach my $elevation (@elevation) {
-		my $unitDirection = 0;
-		$elevation /= 10;
-		push @net, {azimut => $elevation, direction => $unitDirection}
-	}
-	push @antennaElevation,\@net;
-}
+#$b = $s->bfile->get_bytes(2);
+#my $format = "s";
+#my $antennaNetworkCount = unpack($format,$b);
+## a short integer set how much units enabled in ElevationAngle
+#$b = $s->bfile->get_bytes(2);
+#my $format = "s";
+#my $antennaUnitsCount = unpack($format,$b);
+#my @antennaElevation;
+#$b = $s->bfile->get_bytes($antennaNetworkCount * 2 * $antennaUnitsCount);
+#my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
+#foreach (0..$antennaNetworkCount-1) {
+#	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($antennaUnitsCount-1) .  'S'; 
+#	my @net;
+#	my @elevation = unpack($format,$b);
+#	foreach my $elevation (@elevation) {
+#		my $unitDirection = 0;
+#		$elevation /= 10;
+#		push @net, {azimut => $elevation, direction => $unitDirection}
+#	}
+#	push @antennaElevation,\@net;
+#}
 #print Data::Dumper::Dumper(\@antennaElevation);
 
 # got version number again
