@@ -14,7 +14,7 @@ use RadioMobile::System;
 sub parse {
 	my $s	 	= shift;
 	my $f	  	= $s->container->bfile;
-	my $len		= $s->container->header->unitCount;
+	my $len		= $s->container->header->systemCount;
 	foreach (1..$len) {
 		my $system = new RadioMobile::System;
 		$system->parse($f);
