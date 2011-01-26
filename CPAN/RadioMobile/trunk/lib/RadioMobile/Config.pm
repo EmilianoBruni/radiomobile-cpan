@@ -12,6 +12,7 @@ use RadioMobile::Config::StyleNetworksProperties;
 use RadioMobile::Config::MapFileParser;
 use RadioMobile::Config::StyleNetworksPropertiesParser;
 use RadioMobile::Config::Pictures;
+use RadioMobile::Config::LandHeightParser;
 
 __PACKAGE__->valid_params(
 							stylenetworksproperties	=> { isa  =>
@@ -24,7 +25,7 @@ __PACKAGE__->contained_objects(
 );
 
 use Class::MethodMaker [ scalar => [qw/stylenetworksproperties mapfilepath
-	pictures/] ];
+	pictures landheight/] ];
 
 sub new {
 	my $package = shift;
@@ -48,6 +49,15 @@ sub parse_stylenetworks {
 					bfile   => $s->container->bfile,
 					config	=> $s
 	);
+	$p->parse;
+}
+
+sub parse_landheight {
+	my $s	= shift;
+	my $p	= new RadioMobile::Config::LandHeightParser(
+					bfile 	=> $s->container->bfile,
+					config	=> $s
+			);
 	$p->parse;
 }
 

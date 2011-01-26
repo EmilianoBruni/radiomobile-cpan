@@ -171,51 +171,21 @@
 		$ep->parse;
 		print "Elevation: \n", $s->netsunits->dump('elevation') if $s->debug;
 
-# a short integer set how much network enabled in ElevationAngle
-#$b = $s->bfile->get_bytes(2);
-#my $format = "s";
-#my $antennaNetworkCount = unpack($format,$b);
-## a short integer set how much units enabled in ElevationAngle
-#$b = $s->bfile->get_bytes(2);
-#my $format = "s";
-#my $antennaUnitsCount = unpack($format,$b);
-#my @antennaElevation;
-#$b = $s->bfile->get_bytes($antennaNetworkCount * 2 * $antennaUnitsCount);
-#my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
-#foreach (0..$antennaNetworkCount-1) {
-#	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($antennaUnitsCount-1) .  'S'; 
-#	my @net;
-#	my @elevation = unpack($format,$b);
-#	foreach my $elevation (@elevation) {
-#		my $unitDirection = 0;
-#		$elevation /= 10;
-#		push @net, {azimut => $elevation, direction => $unitDirection}
-#	}
-#	push @antennaElevation,\@net;
-#}
-#print Data::Dumper::Dumper(\@antennaElevation);
+		# got version number again
+		my $b = $s->bfile->get_bytes(2);
+		my $versionNumberAgain = unpack("s",$b);
+		die "not find version number where expected" unless ($versionNumberAgain == $s->header->version);
 
-# got version number again
-$b = $s->bfile->get_bytes(2);
-my $versionNumberAgain = unpack("s",$b);
+		# this is a zero, don't known what it's
+		$b = $s->bfile->get_bytes(2);
+		my $unknownZeroNumber = unpack("s",$b);
+		die "unexpected value of $unknownZeroNumber while waiting 0 " unless ($unknownZeroNumber == 0);
+		# lettura del percorso al file landheight
+		$s->config->parse_landheight;
+		print "Land Height path: " . $s->config->landheight . "\n" if $s->debug;
 
-die "not find version number where expected" unless ($versionNumberAgain == $s->header->version);
-
-# this is a zero, don't known what it's
-$b = $s->bfile->get_bytes(2);
-my $unknownZeroNumber = unpack("s",$b);
-die "unexpected value of $unknownZeroNumber while waiting 0 " unless ($unknownZeroNumber == 0);
-
-# leght of landheight.dat path
-$b = $s->bfile->get_bytes(2);
-my $lenghtLandHeight = unpack("s",$b);
-$b = $s->bfile->get_bytes($lenghtLandHeight);
-my $pathLandHeight = unpack("a$lenghtLandHeight",$b);
-print $pathLandHeight, "\n";
-
-$s->bfile->close;
-}
-
+		$s->bfile->close;
+	}
 
 1;
 __END__
