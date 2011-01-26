@@ -45,7 +45,7 @@ sub parse {
 	my $o = $s->parent->nets;
 
 	my $b = $f->get_bytes(8 * $l);
-	my @u = unpack("H8" x $l,$b);
+	my @u = unpack("H16" x $l,$b);
 
  	foreach (0..$l-1) {
 		$o->at($_)->unknown1($u[$_]);
