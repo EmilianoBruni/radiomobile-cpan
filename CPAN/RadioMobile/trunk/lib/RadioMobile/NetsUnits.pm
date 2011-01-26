@@ -11,8 +11,6 @@ use base qw(Class::Container RadioMobile::Utils::Matrix);
 __PACKAGE__->valid_params();
 __PACKAGE__->contained_objects();
 
-use Class::MethodMaker [ scalar => [qw//] ];
-
 use RadioMobile::NetUnit;
 
 sub new {
