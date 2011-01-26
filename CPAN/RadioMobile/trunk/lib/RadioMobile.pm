@@ -20,6 +20,7 @@
 	use RadioMobile::SystemCableLossParser;
 	use RadioMobile::SystemAntennaParser;
 	use RadioMobile::Nets;
+	use RadioMobile::NetUnknown1Parser;
 	use RadioMobile::NetsUnits;
 	use RadioMobile::Cov;
 	use RadioMobile::Config;
@@ -139,6 +140,12 @@
 		$s->config->parse_stylenetworks;
 		print "Style Network Properties: " . 
 					$s->config->stylenetworksproperties->dump if $s->debug;
+
+		# parse an unknown structure of 8 * networkCount bytes
+		my $un = new RadioMobile::NetUnknown1Parser(parent => $s);
+		$un->parse;
+		print "Network after unknown1 structure: " .
+					$s->nets->dump if $s->debug;
 
 		# parse system antenna
 		my $ap = new RadioMobile::SystemAntennaParser(parent => $s);

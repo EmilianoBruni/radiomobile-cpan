@@ -43,7 +43,8 @@ use Class::MethodMaker [scalar => [qw/bfile config/] ];
 #print "Two ray normal: " . !(hex($data[3]) & 0x01),"\n";
 #print "Two ray interfer: " . (hex($data[3]) & 0x01),"\n";
 
-use constant LEN	=> 23;
+# LEN: 4 byte + 3 Unknown
+use constant LEN	=> 4+3;
 use constant PACK	=> 'H2H2H2H2';
 
 sub new {

@@ -31,7 +31,7 @@ use File::Binary;
 use constant LEN	=> 72;
 use constant PACK	=> 'ffsfffssfffssA30';
 use constant ITEMS	=> qw/minfx maxfx pol eps sgm ens climate mdvar time location
-							situation hops topology name/;
+							situation hops topology name unknown1/;
 
 
 __PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
@@ -40,6 +40,7 @@ use Class::MethodMaker [scalar => [ITEMS]];
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
+	$s->unknown1('');
 	return $s;
 }
 
