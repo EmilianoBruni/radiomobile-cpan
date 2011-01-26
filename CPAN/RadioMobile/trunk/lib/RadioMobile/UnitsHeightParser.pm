@@ -64,7 +64,7 @@ sub parse {
 	my $skip   = 'x[' . ($h->networkCount-1)*4 .  ']';
 	my $b = $f->get_bytes( 4 * $h->unitCount * $h->networkCount);
 	foreach my $idxNet (0..$h->networkCount-1) {
-		my $format = 'x[' . $idxNet * 4  . '](f' .  $skip . ')' . ($h->unitCount-1) .  's';
+		my $format = 'x[' . $idxNet * 4  . '](f' .  $skip . ')' . ($h->unitCount-1) .  'f';
 		my @height = unpack($format,$b);
 		foreach my $idxUnit (0..$h->unitCount-1) {
 			$n->at($idxNet,$idxUnit)->height($height[$idxUnit]);

@@ -15,6 +15,7 @@
 	use RadioMobile::UnitIconParser;
 	use RadioMobile::UnitsSystemParser;
 	use RadioMobile::UnitsHeightParser;
+	use RadioMobile::UnitsAzimutDirectionParser;
 	use RadioMobile::Systems;
 	use RadioMobile::SystemCableLossParser;
 	use RadioMobile::SystemAntennaParser;
@@ -145,7 +146,11 @@
 		print "SYSTEMS with Antenna: \n", $s->systems->dump if $s->debug;
 
 
-# read azimut antenas
+		# read azimut antenas
+		my $ad = new RadioMobile::UnitsAzimutDirectionParser(parent => $s);
+		$ad->parse;
+		print "Azimut: \n", $s->netsunits->dump('azimut') if $s->debug;
+		print "Direction: \n", $s->netsunits->dump('direction') if $s->debug;
 # AZIMUT_ANTENNAS shows the azimut of every antenna in every networks
 # the azimut is a short unsigned integer identifing it's value power by ten
 # If it's value is greater than 10.000, it's not a azimut value but it's the
@@ -161,25 +166,25 @@
 #   [A3 B3 C3 ... ]
 # ]
 # like _NetData.csv
-my @antennaAzimut;
-my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
-$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
-foreach (0..$s->header->networkCount-1) {
-	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  'S'; 
-	my @net;
-	my @azimut = unpack($format,$b);
-	foreach my $azimut (@azimut) {
-		my $unitDirection = 0;
-		if ($azimut > 10000) {
-			$unitDirection = $azimut - 10000;
-			$azimut = 0;
-		} else {
-			$azimut /= 10;
-		}
-		push @net, {azimut => $azimut, direction => $unitDirection}
-	}
-	push @antennaAzimut, \@net;
-}
+#my @antennaAzimut;
+#my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
+#$b = $s->bfile->get_bytes($NetRoleLen->($s->header) * 2);
+#foreach (0..$s->header->networkCount-1) {
+#	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($s->header->unitCount-1) .  'S'; 
+#	my @net;
+#	my @azimut = unpack($format,$b);
+#	foreach my $azimut (@azimut) {
+#		my $unitDirection = 0;
+#		if ($azimut > 10000) {
+#			$unitDirection = $azimut - 10000;
+#			$azimut = 0;
+#		} else {
+#			$azimut /= 10;
+#		}
+#		push @net, {azimut => $azimut, direction => $unitDirection}
+#	}
+#	push @antennaAzimut, \@net;
+#}
 
 # a short integer set how much structure follows.
 # currently there are unknown elements
@@ -200,9 +205,9 @@ my $format = "s";
 my $antennaUnitsCount = unpack($format,$b);
 my @antennaElevation;
 $b = $s->bfile->get_bytes($antennaNetworkCount * 2 * $antennaUnitsCount);
+my $skip2   = 'x[' . ($s->header->networkCount-1)*2 .  ']';
 foreach (0..$antennaNetworkCount-1) {
-	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($antennaUnitsCount-1) .
-	'S'; 
+	my $format = 'x[' . $_ * 2  . '](S' .  $skip2 . ')' . ($antennaUnitsCount-1) .  'S'; 
 	my @net;
 	my @elevation = unpack($format,$b);
 	foreach my $elevation (@elevation) {

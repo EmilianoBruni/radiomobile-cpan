@@ -17,7 +17,7 @@ __PACKAGE__->contained_objects(
 	'net'	=> 'RadioMobile::Net',
 );
 
-use Class::MethodMaker [ scalar => [qw/unit net isIn role system height/] ];
+use Class::MethodMaker [ scalar => [qw/unit net isIn role system height azimut direction/] ];
 
 sub new {
 	my $package = shift;
@@ -34,6 +34,8 @@ sub dump {
 sub reset {
 	my $s	= shift;
 	$s->isIn(0);
+	$s->azimut('');
+	$s->direction('');
 }
 
 1;
