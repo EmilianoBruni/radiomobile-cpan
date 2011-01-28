@@ -12,6 +12,8 @@ __PACKAGE__->contained_objects();
 
 use RadioMobile::NetUnit;
 
+our $VERSION    = '0.01';
+
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);

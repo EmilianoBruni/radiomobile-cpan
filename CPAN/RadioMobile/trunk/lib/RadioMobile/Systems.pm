@@ -10,6 +10,8 @@ use File::Binary;
 
 use RadioMobile::System;
 
+our $VERSION    = '0.01';
+
 sub parse {
 	my $s	 	= shift;
 	my $f	  	= $s->container->bfile;

@@ -1,5 +1,7 @@
 package RadioMobile::Config::StyleNetworksPropertiesParser;
 
+our $VERSION    = '0.01';
+
 use strict;
 use warnings;
 

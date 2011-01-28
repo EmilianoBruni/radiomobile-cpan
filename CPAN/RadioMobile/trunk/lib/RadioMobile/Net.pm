@@ -11,6 +11,8 @@ use base qw(Class::Container);
 
 use File::Binary;
 
+our $VERSION    = '0.01';
+
 # NET STRUCTURE - Len 72 bytes
 # MINFX				([f] single-precision float - VB Single type - 4 bytes),
 # MAXFX				([f] single-precision float - VB Single type - 4 bytes),

@@ -13,6 +13,8 @@ use RadioMobile::Config::StyleNetworksPropertiesParser;
 use RadioMobile::Config::Pictures;
 use RadioMobile::Config::LandHeightParser;
 
+our $VERSION    = '0.01';
+
 __PACKAGE__->valid_params(
 							stylenetworksproperties	=> { isa  =>
 								'RadioMobile::Config::StyleNetworksProperties'},

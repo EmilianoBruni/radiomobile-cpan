@@ -9,6 +9,8 @@ use base qw(Class::Container);
 
 use File::Binary;
 
+our $VERSION    = '0.01';
+
 # COVERAGE STRUCTURE - Len 74 bytes
 # DMAX				([f] single-precision float - VB Single type - 4 bytes),
 # THMIN				([f] single-precision float - VB Single type - 4 bytes),

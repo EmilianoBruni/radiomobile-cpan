@@ -9,6 +9,8 @@ use base qw(Class::Container);
 
 use File::Binary;
 
+our $VERSION    = '0.01';
+
 # UNIT STRUCTURE - Len 44 bytes
 # LON               ([f] single-precision float - VB Single type - 4 bytes),
 # LAT               ([f] single-precision float - VB Single type - 4 bytes),
