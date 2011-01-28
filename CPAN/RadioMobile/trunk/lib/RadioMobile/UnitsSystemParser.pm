@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.02';
 
 __PACKAGE__->valid_params( 
 							bfile	=> {isa => 'File::Binary'},
@@ -19,7 +19,7 @@ use Class::MethodMaker [ scalar => [qw/header netsunits bfile/] ];
 
 =head1 NAME
 
-RadioMobile::UnitsSystemsParses
+RadioMobile::UnitsSystemParser
 
 =head1 DESCRIPTION
 

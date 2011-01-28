@@ -7,14 +7,14 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.02';
 
 __PACKAGE__->valid_params( parent => { isa  => 'Class::Container'} ) ;
 use Class::MethodMaker [ scalar => [qw/parent/] ];
 
 =head1 NAME
 
-RadioMobile::UnitsIconParser
+RadioMobile::UnitIconParser
 
 =head1 DESCRIPTION
 
