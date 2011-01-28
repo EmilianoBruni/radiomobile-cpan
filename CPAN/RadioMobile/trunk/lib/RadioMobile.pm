@@ -1,6 +1,6 @@
 	package RadioMobile;
 
-	use 5.010000;
+	use 5.008000;
 	use strict;
 	use warnings;
 
@@ -51,7 +51,7 @@
 	use Class::MethodMaker [ scalar => [qw/file debug header units 
 		bfile systems nets netsunits config/] ];
 
-	our $VERSION	= 0.1;
+	our $VERSION	= '0.01';
 
 	sub new {
 		my $proto 	= shift;
