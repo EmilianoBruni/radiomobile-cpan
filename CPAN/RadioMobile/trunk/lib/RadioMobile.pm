@@ -193,45 +193,118 @@ __END__
 
 =head1 NAME
 
-RadioMobile - Perl extension for blah blah blah
+RadioMobile - A Perl interface to Radio Mobile .net file
 
 =head1 SYNOPSIS
 
   use RadioMobile;
-  blah blah blah
+  my $rm = new RadioMobile();
+  $rm->file('path_to_radiomobile_file.net');
+  $rm->parse;
+
+  my $header = $rm->header;
+  my $units  = $rm->units;
+
+  foreach my $idxUnit (0..$header->unitCount-1) {
+	  my $unit = $units->at($idxUnit);
+	  printf("%s at lon %s and lat %s\n", $unit->name, 
+	    $unit->lon, $unit->lat);
+  }
 
 =head1 DESCRIPTION
 
-Stub documentation for RadioMobile, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+This module is a Perl interface to .net file of Radio Mobile, a software
+to predict the performance of a radio system.
 
-Blah blah blah.
+Currently this module only parse .net file to extract all information
+available inside it such as units, radio systems, networks, some
+configuration of program behaviour, the header with version file, number
+of units, systems and networks. It also extract the relation between
+units, systems and networks to show the units associated to a network,
+their systems and so on.
 
-=head2 EXPORT
+As soon as possible it will be possible to create a .net from scratch
+with information available, as an example, from a database.
 
-None by default.
+This module supports only .net file with 4000 as version number (I don't
+know exactly from which it has been adopted this but I'm sure that all
+Radio Mobile file starting from version 9.x.x used this).
+
+=head1 BE CAREFUL
+
+This is a beta test release. Interfaces can change in future. Report me
+any bug you will find.
+
+=head1 METHODS
+
+=head2 new()
+
+Call C<new()> to create a new RadioMobile object
+
+  my $rm = new RadioMobile();
+
+You can call C<new()> to force parsing to dump all structures found using
+the debug parameter
+
+  my $rm = new RadioMobile(debug => 1);
+
+=head2 file()
+
+Use this method to set the path, relative or absolute, to a .net file
+created by Radio Mobile software.
+
+  $rm->file('net1.net');
+
+=head2 parse()
+
+Execute this method for parsing the .net file set with C<file()> method and
+fullfill C<header()>, C<config()>, C<units()>, C<systems()>, C<nets()> and
+C<netsunits()> elements.
+
+=head2 header()
+
+Returns a L<RadioMobile::Header> object with information about .net
+version file, number of units, systems and networks
+
+=head2 config()
+
+Returns a L<RadioMobile::Config> object with Style Network Properties
+window setting, list of pictures to be open, the mapfile and landheight
+path.
+
+=head2 units()
+
+Returns a L<RadioMobile::Units> object with a list of all units.
+
+=head2 systems()
+
+Returns a L<RadioMobile::Systems> object with a list of all systems.
 
 
+=head2 nets()
 
-=head1 SEE ALSO
+Returns a L<RadioMobile::Nets> object with a list of all networks.
 
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
+=head2 netsunits
 
-If you have a mailing list set up for your module, mention it here.
+Returns a L<RadioMobile::NetsUnits> object which is a matrix
+C<$header-E<gt>networkCount * $header-E<gt>unitCount> with all relation between
+units, networks and systems.
 
-If you have a web site set up for your module, mention it here.
+=head1 OBJECT MODEL
+
+In F<docs/> distribution directory you can find a PDF with a summarize 
+of RadioMobile object model.
 
 =head1 AUTHOR
 
-root, E<lt>root@E<gt>
+Emiliano Bruni, <lt>info@ebruni.it<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2011 by root
+This module is a copyright by Emiliano Bruni
+
+Radio Mobile software is a copyright by Roger Coude' VE2DBE.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.0 or,

@@ -2,6 +2,7 @@ Changes
 Makefile.PL
 MANIFEST
 README
+docs/radiomobile_object_model.pdf
 t/RadioMobile.t
 lib/RadioMobile.pm
 lib/RadioMobile/Header.pm
