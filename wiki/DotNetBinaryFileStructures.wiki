@@ -119,3 +119,25 @@ Every network is a structure 72 bytes long with these property
 || *HOPS*        || `[s]` signed short || Integer || 2 ||
 || *TOPOLOGY*        || `[s]` signed short || Integer || 2 ||
 || *NAME*        || `[A]` ASCII string || String*30 || 30||
+
+=Cov=
+
+Following there is a 74 byte long structure describe currently cartesian coverage windows setting. 
+
+|| *Field Name* || *Perl Type (pack)* || *VB Type*       || *Len*  ||
+|| *DMAX* || `[f]` single-precision float || Single || 4 ||
+|| *THMIN* || `[f]` single-precision float || Single || 4 ||
+|| *THMAX* || `[f]` single-precision float || Single || 4 ||
+|| *THINC* || `[f]` single-precision float || Single || 4 ||
+|| *ANTAZT* || `[f]` single-precision float || Single || 4 ||
+|| *FILE* || `[A]` ASCII string || String*20 || 20 ||
+|| *TRESHOLD* || `[s]` signed short || Integer || 2 ||
+|| *LEVEL* || `[f]` single-precision float || Single || 4 ||
+|| *AREA* || `[S]` unsigned short || Boolean?? || 2 ||
+|| *CAREA* || `[l]` signed long || Integer || 4 ||
+|| *CONTOUR* || `[S]` unsigned short || Boolean || 2 ||
+|| *CCONTOUR* || `[l]` signed long || Integer || 4 ||
+|| *VHS* || `[f]` single-precision float || Single || 4||
+|| *VHT* || `[f]` single-precision float || Single || 4 ||
+|| *DMIN* || `[f]` single-precision float || Single|| 4 ||
+|| *VCOL* || `[l]` signed long || Integer || 4 ||
