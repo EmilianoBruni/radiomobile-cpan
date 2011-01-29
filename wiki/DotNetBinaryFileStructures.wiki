@@ -6,16 +6,16 @@ This document analizes the structure of the configuration file .net saved by Rad
 
 The .net is a binary file. Its macro structure has build by these blocks
 
-  * [#Header Header]
-  * Units information list
-  * Systems information list
-  * Units `<->` Nets association and the role of every unit in every net
-  * The system of every unit in every net
-  * Nets information list
-  * Coverage settings
-  * Path to .map file
-  * Pictures list path to load
-  * The height of every unit in every net
+  * [#Header Header] informatio
+  * [#Units Units] information list
+  * [#Systems Systems] information list
+  * [#UnitsNetsRole UnitsNetsRole] with Units `<->` Nets association and the role of every unit in every net
+  * [#UnitsNetsSystem UnitsNetsSystem] with system of every unit in every net
+  * [#Nets Nets] information list
+  * [#Coverage Coverage] settings
+  * [#MapFilePath MapFilePath] with the path to .map file
+  * [#Pictures Pictures] list path to load
+  * [#UnitsNetsheight UnitsNetsheight] setting height of every unit in every net
   * The icon of every unit
   * Additional cable loss for every system
   * Style networks properties window settings
