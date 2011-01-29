@@ -35,6 +35,22 @@ The file begins with a 10 byte structure with header and general information.
 
 || *Field Name* || *Perl Type (pack)* || *VB Type* || *Len* ||
 || *VERSION*      || `[f]` single-precision float || Single || 4 || 
-|| *NETWORK ELEMENTS COUNT* || `[s]` signed short || Integer || 2 || 
-|| *UNIT ELEMENTS COUNT* || `[s]` signed short || Integer || 2 ||
-|| *SYSTEM ELEMENTS COUNT* || `[s]` signed short || Integer || 2 ||
+|| *NETWORKS COUNT* || `[s]` signed short || Integer || 2 || 
+|| *UNITS COUNT* || `[s]` signed short || Integer || 2 ||
+|| *SYSTEMS COUNT* || `[s]` signed short || Integer || 2 ||
+
+=Units=
+
+Following there are "UNITS COUNT" elements which describe every unit of the simulation.
+
+Every unit is a structure 44 bytes long with these property
+
+|| *Field Name* || *Perl Type (pack)* || *VB Type*       || *Len*  ||
+|| *LON*        || `[f]` single-precision float || Single    || 4  ||
+|| *LAT*        || `[f]` single-precision float || Single    || 4  ||
+|| *H*          || `[f]` single-precision float || Single    || 4  ||
+|| *ENABLED*    || `[s]` signed short           || Integer   || 2  ||
+|| *TRANSPARENT*|| `[s]` signed short           || Integer   || 2  ||
+|| *FORECOLOR*  || `[l]` signed long            || Integer   || 4  ||
+|| *BACKCOLOR*  || `[l]` signed long            || Integer   || 4  ||
+|| *NAME*       || `[A]` ASCII string           || String*20 || 20 ||
