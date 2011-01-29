@@ -69,7 +69,7 @@ Every system is a structure 50 bytes long with these property
 || *H*        || `[f]` single-precision float || Single || 4 ||
 || *NAME*        || `[A]` ASCII string || String*30 || 30 ||
 
-=NetsUnitsRole=
+=!NetsUnitsRole=
 
 Following there are "NETWORKS COUNT" `*` "UNITS COUNT" bytes shows in which network is associated an unit and its role (master/slave/node/terminal).
 
@@ -78,5 +78,27 @@ Given A,B,C... units and 1,2,3 Network so A1 is a byte indicate if unit A is in 
 
 Every byte has used in this way. Give A1 = aaaabbbb where aaaa is the first four bits and bbbb the others then aaaa is 1000 if the unit A belongs to network 1, 0000 else. bbbb, decoded as an integer 0..127 set the role of this unit in this network.
 
-Examples: \x00 first role, no belong, \x01 second role, no belong, \x80 (128) first role, belong to network, \x81 (129) second role belong 
+Examples: \x00 first role, no belong, \x01 second role, no belong, \x80 (128) first role, belong to network, \x81 (129) second role belong
 
+
+=Nets=
+
+Following there are "NETWORKS COUNT" elements which describe every network of the simulation.
+
+Every network is a structure 72 bytes long with these property
+
+|| *Field Name* || *Perl Type (pack)* || *VB Type*       || *Len*  ||
+|| *MINFX*        || `[f]` single-precision float || Single || 4 ||
+|| *MAXFX*       || `[f]` single-precision float || Single || 4||
+|| *POL*        || `[s]` signed short || Integer || 2 ||
+|| *EPS*        || `[f]` single-precision float || Single || 4 ||
+|| *SGM*        || `[f]` single-precision float || Single || 4 ||
+|| *ENS*        || `[f]` single-precision float || Single || 4 ||
+|| *CLIMATE*        || `[s]` signed short || Integer || 2 ||
+|| *MDVAR*        || `[s]` signed short|| Integer || 2 ||
+|| *TIME*        || `[f]` single-precision float || Single || 4 ||
+|| *LOCATION*        || `[f]` single-precision float || Single || 4 ||
+|| *SITUATION*        || `[f]` single-precision float || Single || 4||
+|| *HOPS*        || `[s]` signed short || Integer || 2 ||
+|| *TOPOLOGY*        || `[s]` signed short || Integer || 2 ||
+|| *NAME*        || `[A]` ASCII string || String*30 || 30||
