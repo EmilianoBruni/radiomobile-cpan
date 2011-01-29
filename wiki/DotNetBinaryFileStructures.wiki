@@ -6,30 +6,30 @@ This document analizes the structure of the configuration file .net saved by Rad
 
 The .net is a binary file. Its macro structure has build by these blocks
 
-* Header
-* Units information list
-* Systems information list
-* Units <-> Nets association and the role of every unit in every net
-* The system of every unit in every net
-* Nets information list
-* Coverage settings
-* Path to .map file
-* Pictures list path to load
-* The height of every unit in every net
-* The icon of every unit
-* Additional cable loss for every system
-* Style networks properties window settings
-* A (currently) unknown network property
-* The antenna setting for every system
-* The azimut or unit direction of antenna in every unit in every net
-* A (currently) unknown unit property
-* The elevation angle of antenna in every unit in every net
-* The version number (again)
-* A (currently unknown) two bytes zerofilled
-* Path to landheight file 
+  * [#Header Header]
+  * Units information list
+  * Systems information list
+  * Units `<->` Nets association and the role of every unit in every net
+  * The system of every unit in every net
+  * Nets information list
+  * Coverage settings
+  * Path to .map file
+  * Pictures list path to load
+  * The height of every unit in every net
+  * The icon of every unit
+  * Additional cable loss for every system
+  * Style networks properties window settings
+  * A (currently) unknown network property
+  * The antenna setting for every system
+  * The azimut or unit direction of antenna in every unit in every net
+  * A (currently) unknown unit property
+  * The elevation angle of antenna in every unit in every net
+  * The version number (again)
+  * A (currently unknown) two bytes zerofilled
+  * Path to landheight file 
 
 
-= Details =
+=Header=
 
 Add your content here.  Format your content with:
   * Text in *bold* or _italic_
