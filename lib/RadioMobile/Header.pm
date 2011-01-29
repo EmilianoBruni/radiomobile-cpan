@@ -11,8 +11,6 @@ use base qw(Class::Container);
 
 use File::Binary;
 
-our $VERSION    = '0.01';
-
 # HEADER STRUCTURE - Len 10 bytes
 # VERSION 			([f] single-precision float - VB Single type - 4 bytes), 
 # NETWORK ELEMENTS 	([s] signed short - VB Integer type - 2 bytes),

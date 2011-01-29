@@ -11,8 +11,6 @@ use base qw(Class::Container);
 
 use File::Binary;
 
-our $VERSION    = '0.01';
-
 # SYSTEM STRUCTURE - Len 50 bytes
 # TX                ([f] single-precision float - VB Single type - 4 bytes),
 # RX                ([f] single-precision float - VB Single type - 4 bytes),

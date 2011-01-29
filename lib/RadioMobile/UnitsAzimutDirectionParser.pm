@@ -7,8 +7,6 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
-
 __PACKAGE__->valid_params( 
 							parent	=> {isa => 'RadioMobile'},
 );

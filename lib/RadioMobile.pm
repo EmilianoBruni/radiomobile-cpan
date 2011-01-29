@@ -51,7 +51,7 @@
 	use Class::MethodMaker [ scalar => [qw/file debug header units 
 		bfile systems nets netsunits config/] ];
 
-	our $VERSION	= '0.02';
+	our $VERSION	= '0.01';
 
 	sub new {
 		my $proto 	= shift;

@@ -1,7 +1,5 @@
 package RadioMobile::Utils::Matrix;
 
-our $VERSION    = '0.01';
-
 use strict;
 use warnings;
 
