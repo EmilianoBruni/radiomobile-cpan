@@ -1,16 +1,21 @@
 RadioMobile version 0.01
 ========================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+This module is a Perl interface to .net file of Radio Mobile, a software to predict
+the performance of a radio system.
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+Currently this module only parse .net file to extract all information available
+inside it such as units, radio systems, networks, some configuration of program
+behaviour, the header with version file, number of units, systems and networks. It
+also extract the relation between units, systems and networks to show the units
+associated to a network, their systems and so on.
+
+As soon as possible it will be possible to create a .net from scratch with
+information available, as an example, from a database.
+
+This module supports only .net file with 4000 as version number (I don't know
+exactly from which it has been adopted this but I'm sure that all Radio Mobile file
+starting from version 9.x.x used this). 
 
 INSTALLATION
 
@@ -25,13 +30,14 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+   Class::Container
+   Class::MethodMaker
+   Array::AsObject
+   File::Binary
 
 COPYRIGHT AND LICENCE
 
-Put the correct copyright and licence information here.
-
-Copyright (C) 2011 by root
+Copyright (C) 2011 by Emiliano Bruni
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.0 or,
