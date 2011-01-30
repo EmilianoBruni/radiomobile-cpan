@@ -81,7 +81,6 @@ It's structure is
 
 and so on.
 
-
 Every byte has used in this way. Give A1 = aaaabbbb where aaaa is the first four bits and bbbb the others then aaaa is 1000 if the unit A belongs to network 1, 0000 else. bbbb, decoded as an integer 0..127 set the role of this unit in this network.
 
 Examples: \x00 first role, no belong, \x01 second role, no belong, \x80 (128) first role, belong to network, \x81 (129) second role belong
@@ -124,6 +123,10 @@ Every network is a structure 72 bytes long with these property
 
 Following there is a 74 byte long structure describe currently cartesian coverage windows setting. 
 
+http://blog.ebruni.it/blog/wp-content/uploads/2011/01/Radio-Mobile-Single-Polar-Radio-Coverage-383x400.png
+
+Its structure is
+
 || *Field Name* || *Perl Type (pack)* || *VB Type*       || *Len*  ||
 || *DMAX* || `[f]` single-precision float || Single || 4 ||
 || *THMIN* || `[f]` single-precision float || Single || 4 ||
@@ -162,4 +165,30 @@ It's structure is
 
 and so on.
 
-=UnitIcon=
+=!UnitIcon=
+
+Following there are "UNITS COUNT" bytes which rappresent the index zero-based of the icon of any units. The value is an unsigned octet value 0..254
+
+=!SystemCableLoss=
+
+Following we find "SYSTEMS COUNT" single-precision float (4 bytes) rappresents an additional line loss per meter in every system.
+
+=!StyleNetworksProperties=
+
+Following we find a block of elements used for some program settings. It's 7 bytes long but it seems only first 4 bytes are used for Style Networks properties (use two ray LOS, draw green, yello, red and bg line, etc.)
+
+[add the window picture here]
+
+Given b(1) the first bit, b(2..8) the bits from 2 to 8 we find that
+
+  * b(1): Enabled (1) or disabled (0) "Draw a red line..."
+  * b(2..8): an unsigned short to draw yellow line if RX >= b(2..8) - 50
+  * b(9): Enabled (1) or disabled (0) "Draw a yellow line..."
+  * b(10..16): an unsigned short to draw yellow line if RX >= b(10..16) - 50
+  * b(17): Enabled (1) or disabled (0) "Draw a green line..."
+  * b(18..23): Not used
+  * b(24): Enabled (1) or disabled (0) "Draw lines with dark background"
+  * b(25..30: Not used
+  * b(31): Enabled (0) or disabled (1) "Use Two Rays..."
+  * b(32): Normal (0) or Interference (1) Two Ray Los
+
