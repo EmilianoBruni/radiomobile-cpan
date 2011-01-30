@@ -43,7 +43,7 @@ sub parse {
 # belongs to network 1, 0000 else. 
 # bbbb is an integer 0..127 setting its role index
 # Example: (\x00 first role, no belong, \x01 second role, no belong, 
-# \x80 (128) first role, belong to network, \x81 (129) first role, belong 
+# \x80 (128) first role, belong to network, \x81 (129) second role, belong 
 	my $s = shift;
 	my $f = $s->container->bfile;
 	my $h = $s->container->header;

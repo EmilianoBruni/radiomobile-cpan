@@ -1,4 +1,7 @@
 Revision history for Perl extension RadioMobile.
 
+0.02  Sun Jan 30 14:55:11 CET 2011
+	- Add a missing module requirement
+
 0.01  Fri Jan 28 20:50:28 CET 2011
 	- First public revision
