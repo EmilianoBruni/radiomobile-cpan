@@ -18,8 +18,8 @@ __PACKAGE__->valid_params(
 use Class::MethodMaker [scalar => [qw/bfile config/] ];
 
 # This module parse/generate
-# a block of configuration elements. It seems it's 23 bytes long
-# but only first 4 bytes are used for Style Networks properties 
+# a block of configuration elements. It's 7 bytes long but it seems
+# only first 4 bytes are used for Style Networks properties 
 # (use two ray LOS, draw green, yello, red and bg line, etc.)
 # This is its structure in bits
 # b(1): Enabled (1) or disabled (0) "Draw a red line..."
