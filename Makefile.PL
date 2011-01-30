@@ -5,6 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'RadioMobile',
     VERSION_FROM      => 'lib/RadioMobile.pm', # finds $VERSION
+	LICENSE           => 'gpl',
     PREREQ_PM         => {
 							'Class::MethodMaker' 	=> 0,
 							'Array::AsObject'		=> 0,
