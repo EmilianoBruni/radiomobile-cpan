@@ -9,6 +9,7 @@
 	use base qw(Class::Container);
 
 	use File::Binary;
+	use IO::Scalar;
 
 	use RadioMobile::Header;
 	use RadioMobile::Units;
@@ -28,7 +29,8 @@
 	use RadioMobile::Config;
 
 	__PACKAGE__->valid_params(
-								file 	=> { type => SCALAR, optional => 1 },
+								file	=> { type => SCALAR, optional => 1 },
+								filepath=> { type => SCALAR, optional => 1 },
 								debug 	=> { type => SCALAR, optional => 1, default => 0 },
 								header	=> { isa  => 'RadioMobile::Header'},
 								units	=> { isa  => 'RadioMobile::Units'},
@@ -48,10 +50,10 @@
 		'config'	=> 'RadioMobile::Config',
 	);
 
-	use Class::MethodMaker [ scalar => [qw/file debug header units 
-		bfile systems nets netsunits config/] ];
+	use Class::MethodMaker [ scalar => [qw/filepath debug header units 
+		bfile file systems nets netsunits config/] ];
 
-	our $VERSION	= '0.02';
+	our $VERSION	= '0.03';
 
 	sub new {
 		my $proto 	= shift;
@@ -70,7 +72,17 @@
 			return $header->systemCount * $header->unitCount };
 
 		# open binary .net file
-		$s->{bfile} = new File::Binary($s->file);
+		if ($s->file) {
+			# first try to see if you give me binary raw data
+			my $data	= $s->file;
+			my $io		= new IO::Scalar(\$data);
+			$s->{bfile}	= new File::Binary($io);
+		} elsif ($s->filepath) {
+			# then try to see if you give me a file path
+			$s->{bfile} = new File::Binary($s->filepath);
+		} else {
+			die "You must set file or filepath for enable parsing";
+		}
 
 		# read header
 		$s->header->parse;
@@ -250,16 +262,27 @@ the debug parameter
 
 =head2 file()
 
-Use this method to set the path, relative or absolute, to a .net file
-created by Radio Mobile software.
+Use this method to set a scalar with Radio Mobile .net raw data
 
   $rm->file('net1.net');
 
+=head2 filepath()
+
+Use this method to set the path, relative or absolute, to a .net file
+created by Radio Mobile software.
+
+  open(NET,$filepath);
+  binmode(NET);
+  my $dotnet = '';
+  while (read(NET,my $buff,8*2**10)) { $dotnet .=  $buff }
+  close(NET);
+  $rm->file($dotnet);
+
 =head2 parse()
 
-Execute this method for parsing the .net file set with C<file()> method and
-fullfill C<header()>, C<config()>, C<units()>, C<systems()>, C<nets()> and
-C<netsunits()> elements.
+Execute this method for parsing the .net file set with C<file()> or 
+C<filepath()> method and fullfill C<header()>, C<config()>, C<units()>,
+C<systems()>, C<nets()> and C<netsunits()> elements.
 
 =head2 header()
 
