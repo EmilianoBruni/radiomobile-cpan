@@ -11,6 +11,7 @@ WriteMakefile(
 							'Array::AsObject'		=> 0,
 							'File::Binary'			=> 0,
 							'Class::Container'		=> 0,
+							'IO::Scalar'			=> 0,
 	}, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/RadioMobile.pm', # retrieve abstract from module

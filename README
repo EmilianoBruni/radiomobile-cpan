@@ -34,6 +34,7 @@ This module requires these other modules and libraries:
    Class::MethodMaker
    Array::AsObject
    File::Binary
+   IO::Scalar
 
 COPYRIGHT AND LICENCE
 
