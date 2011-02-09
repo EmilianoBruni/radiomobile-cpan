@@ -53,24 +53,21 @@
 	use Class::MethodMaker [ scalar => [qw/filepath debug header units 
 		bfile file systems nets netsunits config/] ];
 
-	our $VERSION	= '0.03';
+	our $VERSION	= '0.04';
 
 	sub new {
 		my $proto 	= shift;
 		my $self	= $proto->SUPER::new(@_);
+		$self->{log_last_code} = 0;
 		return $self;
 	}
 
 
 	sub parse {
-		my $s = shift;
-		# NET ROLE STRUCTURE
-		my $NetRoleLen		= sub { my $header = shift; 
-			return $header->networkCount * $header->unitCount };
-		# NET SYSTEM STRUCTURE
-		my $UnitSystemLen		= sub { my $header = shift; 
-			return $header->systemCount * $header->unitCount };
+		my $s 	= shift;
+		my $cb	= shift;
 
+		$s->_cb($cb,10000,"Open file for parsing");
 		# open binary .net file
 		if ($s->file) {
 			# first try to see if you give me binary raw data
@@ -83,30 +80,42 @@
 		} else {
 			die "You must set file or filepath for enable parsing";
 		}
+		$s->_cb($cb,10000,"Open file for parsing");
 
 		# read header
+		$s->_cb($cb,10100,"Header Parsing");
 		$s->header->parse;
 		print $s->header->dump if $s->debug;
+		$s->_cb($cb,10100,"Header Parsing");
 
 		# read units
+		$s->_cb($cb,10200,"Read Units");
 		$s->units->parse;
 		print $s->units->dump if $s->debug;
+		$s->_cb($cb,10200,"Read Units");
 
 		# read systems
+		$s->_cb($cb,10300,"Read Systems");
 		$s->systems->parse;
 		print $s->systems->dump if $s->debug;
+		$s->_cb($cb,10300,"Read Systems");
 
 		# initialize nets (I need them in net_role structure)
+		$s->_cb($cb,10400,"Init Nets");
 		$s->nets->reset;
+		$s->_cb($cb,10400,"Init Nets");
 		#print $s->nets->dump if $s->debug;
 
 
 		# read net_role
+		$s->_cb($cb,10500,"Setting Nets <-> Units and Roles");
 		$s->netsunits->parse;
 		print "isIn: \n", $s->netsunits->dump('isIn') if $s->debug;
 		print "role: \n", $s->netsunits->dump('role') if $s->debug;
+		$s->_cb($cb,10500,"Setting Nets <-> Units and Roles");
 
 		# read system for units in nets
+		$s->_cb($cb,10600,"Read Systems for Units");
 		my $ns = new RadioMobile::UnitsSystemParser(
 											bfile 		=> $s->bfile,
 											header		=> $s->header,
@@ -114,24 +123,34 @@
 										);
 		$ns->parse;
 		print "system: \n", $s->netsunits->dump('system') if $s->debug;
+		$s->_cb($cb,10600,"Read Systems for Units");
 
 		# read nets
+		$s->_cb($cb,10700,"Read Nets information");
 		$s->nets->parse;
 		print $s->nets->dump if $s->debug;
+		$s->_cb($cb,10700,"Read Nets information");
 
 		# read and unpack coverage
+		$s->_cb($cb,10800,"Parsing Coverage");
 		my $cov = new RadioMobile::Cov;
 		$cov->parse($s->bfile);
+		$s->_cb($cb,10800,"Parsing Coverage");
 
 		# lettura del percorso al file map
+		$s->_cb($cb,10900,"Read Map File path");
 		$s->config->parse_mapfilepath;
 		print "Map file path: " . $s->config->mapfilepath . "\n" if $s->debug;
+		$s->_cb($cb,10900,"Read Map File path");
 
 		# lettura dei percorsi delle picture da caricare
+		$s->_cb($cb,11000,"Read Pictures path");
 		$s->config->pictures->parse;
 		print "PICTURES: " . $s->config->pictures->dump . "\n" if $s->debug;
+		$s->_cb($cb,11000,"Read Pictures path");
 
 		# read net_h 
+		$s->_cb($cb,11100,"Parsing Antenna Height for Units");
 		my $hp = new RadioMobile::UnitsHeightParser(
 											bfile 		=> $s->bfile,
 											header		=> $s->header,
@@ -139,49 +158,66 @@
 										);
 		$hp->parse;
 		print "height: \n", $s->netsunits->dump('height') if $s->debug;
+		$s->_cb($cb,11100,"Parsing Antenna Height for Units");
 
 		# unit icon
+		$s->_cb($cb,11200,"Setting Units Icon");
 		my $up = new RadioMobile::UnitIconParser(parent => $s);
 		$up->parse;
 		print "UNITS with ICONS: \n", $s->units->dump if $s->debug;
+		$s->_cb($cb,11200,"Setting Units Icon");
 
 		# system cable loss
+		$s->_cb($cb,11300,"Setting Additional System Cable Loss");
 		my $cp = new RadioMobile::SystemCableLossParser(parent => $s);
 		$cp->parse;
 		print "SYSTEMS with CABLE LOSS: \n", $s->systems->dump if $s->debug;
+		$s->_cb($cb,11300,"Setting Additional System Cable Loss");
 
 		# parse Style Networks properties
+		$s->_cb($cb,11400,"Parsing Style Network Properties");
 		$s->config->parse_stylenetworks;
 		print "Style Network Properties: " . 
 					$s->config->stylenetworksproperties->dump if $s->debug;
+		$s->_cb($cb,11400,"Parsing Style Network Properties");
 
 		# parse an unknown structure of 8 * networkCount bytes
+		$s->_cb($cb,11500,"Parsing Unknown Network structure");
 		my $un = new RadioMobile::NetUnknown1Parser(parent => $s);
 		$un->parse;
 		print "Network after unknown1 structure: " .
 					$s->nets->dump if $s->debug;
+		$s->_cb($cb,11500,"Parsing Unknown Network structure");
 
 		# parse system antenna
+		$s->_cb($cb,11600,"Reading Antenna for Systems");
 		my $ap = new RadioMobile::SystemAntennaParser(parent => $s);
 		$ap->parse;
 		print "SYSTEMS with Antenna: \n", $s->systems->dump if $s->debug;
+		$s->_cb($cb,11600,"Reading Antenna for Systems");
 
 
 		# read azimut antenas
+		$s->_cb($cb,11700,"Reading Azimut/Direction for Units");
 		my $ad = new RadioMobile::UnitsAzimutDirectionParser(parent => $s);
 		$ad->parse;
 		print "Azimut: \n", $s->netsunits->dump('azimut') if $s->debug;
 		print "Direction: \n", $s->netsunits->dump('direction') if $s->debug;
+		$s->_cb($cb,11700,"Reading Azimut/Direction for Units");
 
 		# read unknown units property
+		$s->_cb($cb,11800,"Parsing Unknown Unit structure");
 		my $uu = new RadioMobile::UnitUnknown1Parser(parent => $s);
 		$uu->parse;
 		print "UNITS after unknown1 structure: " .  $s->units->dump if $s->debug;
+		$s->_cb($cb,11800,"Parsing Unknown Unit structure");
 
 		# read elevation antenas
+		$s->_cb($cb,11900,"Reading Elevation for Units");
 		my $ep = new RadioMobile::UnitsElevationParser(parent => $s);
 		$ep->parse;
 		print "Elevation: \n", $s->netsunits->dump('elevation') if $s->debug;
+		$s->_cb($cb,11900,"Reading Elevation for Units");
 
 		# got version number again
 		my $b = $s->bfile->get_bytes(2);
@@ -193,11 +229,31 @@
 		my $unknownZeroNumber = unpack("s",$b);
 		die "unexpected value of $unknownZeroNumber while waiting 0 " unless ($unknownZeroNumber == 0);
 		# lettura del percorso al file landheight
+		$s->_cb($cb,12000,"Reading LandHeight path");
 		$s->config->parse_landheight;
 		print "Land Height path: " . $s->config->landheight . "\n" if $s->debug;
+		$s->_cb($cb,12000,"Reading LandHeight path");
 
 		$s->bfile->close;
 	}
+
+sub _cb {
+	my $s		= shift;
+	my $cb		= shift;
+	my $code	= shift;
+	my $descr	= shift;
+
+	if ($code == $s->{log_last_code}) {
+		$descr 	= 'END   - ' . $descr;
+		$code	+= 10;
+	} else {
+		$s->{log_last_code} = $code;
+		$s->{log_last_descr} = $descr;
+		$descr 	= 'START - ' . $descr;
+	}
+
+	$cb->({code => $code, descr => $descr}) if ($cb);
+}
 
 1;
 __END__
@@ -283,6 +339,59 @@ created by Radio Mobile software.
 Execute this method for parsing the .net file set with C<file()> or 
 C<filepath()> method and fullfill C<header()>, C<config()>, C<units()>,
 C<systems()>, C<nets()> and C<netsunits()> elements.
+
+You can pass a callback function to get progress status while parsing 
+is running. Currently the system suppors these status
+
+  10000 START - Open file for parsing
+  10010 END   - Open file for parsing
+  10100 START - Header Parsing
+  10110 END   - Header Parsing
+  10200 START - Read Units
+  10210 END   - Read Units
+  10300 START - Read Systems
+  10310 END   - Read Systems
+  10400 START - Init Nets
+  10410 END   - Init Nets
+  10500 START - Setting Nets <-> Units and Roles
+  10510 END   - Setting Nets <-> Units and Roles
+  10600 START - Read Systems for Units
+  10610 END   - Read Systems for Units
+  10700 START - Read Nets information
+  10710 END   - Read Nets information
+  10800 START - Parsing Coverage
+  10810 END   - Parsing Coverage
+  10900 START - Read Map File path
+  10910 END   - Read Map File path
+  11000 START - Read Pictures path
+  11010 END   - Read Pictures path
+  11100 START - Parsing Antenna Height for Units
+  11110 END   - Parsing Antenna Height for Units
+  11200 START - Setting Units Icon
+  11210 END   - Setting Units Icon
+  11300 START - Setting Additional System Cable Loss
+  11310 END   - Setting Additional System Cable Loss
+  11400 START - Parsing Style Network Properties
+  11410 END   - Parsing Style Network Properties
+  11500 START - Parsing Unknown Network structure
+  11510 END   - Parsing Unknown Network structure
+  11600 START - Reading Antenna for Systems
+  11610 END   - Reading Antenna for Systems
+  11700 START - Reading Azimut/Direction for Units
+  11710 END   - Reading Azimut/Direction for Units
+  11800 START - Parsing Unknown Unit structure
+  11810 END   - Parsing Unknown Unit structure
+  11900 START - Reading Elevation for Units
+  11910 END   - Reading Elevation for Units
+  12000 START - Reading LandHeight path
+  12010 END   - Reading LandHeight path
+
+The prototype for callback function is
+
+  sub callback {
+    my $data = shift;
+    print $data->{status}, " ", $data->{descr};
+  }
 
 =head2 header()
 

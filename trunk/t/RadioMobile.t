@@ -7,7 +7,7 @@
 
 my $filepath 	= 't/net1.net';
 
-use Test::More tests => 4;
+use Test::More tests => 46; 
 BEGIN { use_ok('RadioMobile') };
 
 my $rm = new RadioMobile(debug => $ENV{'RM_DEBUG'} || 0);
@@ -28,4 +28,14 @@ close(NET);
 $rm->file($dotnet);
 $rm->parse;
 ok($rm->config->landheight =~ /landheight/i, 'Check last parsing element in file mode');
+
+# testing callback
+$rm->parse(\&cb);
+
+
+sub cb {
+	my $info = shift;
+	print $info->{code}, " ", $info->{descr}, "\n";
+	ok($info->{code} >= 10000, "Checking callback code: " . $info->{code});
+}
 
