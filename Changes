@@ -1,5 +1,8 @@
 Revision history for Perl extension RadioMobile.
 
+0.04  Wed Feb  9 15:18:48 CET 2011
+	- Support for an optional callback function for parse()
+
 0.03  Wed Feb  9 11:29:53 CET 2011
 	- Add support for scalar file data to parse
 	- INCOMPATIBLE CHANGES: now path to file to parse must be set using filepath 
