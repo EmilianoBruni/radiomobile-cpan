@@ -53,7 +53,7 @@
 	use Class::MethodMaker [ scalar => [qw/filepath debug header units 
 		bfile file systems nets netsunits config/] ];
 
-	our $VERSION	= '0.04';
+	our $VERSION	= '0.05';
 
 	sub new {
 		my $proto 	= shift;
@@ -116,11 +116,7 @@
 
 		# read system for units in nets
 		$s->_cb($cb,10600,"Read Systems for Units");
-		my $ns = new RadioMobile::UnitsSystemParser(
-											bfile 		=> $s->bfile,
-											header		=> $s->header,
-											netsunits 	=> $s->netsunits
-										);
+		my $ns = new RadioMobile::UnitsSystemParser( parent => $s );
 		$ns->parse;
 		print "system: \n", $s->netsunits->dump('system') if $s->debug;
 		$s->_cb($cb,10600,"Read Systems for Units");
