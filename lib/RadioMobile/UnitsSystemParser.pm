@@ -7,15 +7,13 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.02';
+our $VERSION    = '0.03';
 
 __PACKAGE__->valid_params( 
-							bfile	=> {isa => 'File::Binary'},
-							header => {isa => 'RadioMobile::Header'},
-							netsunits => {isa => 'RadioMobile::NetsUnits'},
+							parent => {isa => 'RadioMobile'},
 );
 
-use Class::MethodMaker [ scalar => [qw/header netsunits bfile/] ];
+use Class::MethodMaker [ scalar => [qw/parent/] ];
 
 =head1 NAME
 
@@ -34,9 +32,7 @@ It shows what's the system of every units in every network
 
 Parameters:
 
-    bfile     => {isa => 'File::Binary'},
-    header    => {isa => 'RadioMobile::Header'},
-    netsunits => {isa => 'RadioMobile::NetsUnits'}
+    parent     => {isa => 'RadioMobile'},
 
 =cut
 
@@ -60,9 +56,10 @@ It's structure is
 
 sub parse {
 	my $s = shift;
-	my $f = $s->bfile;
-	my $h = $s->header;
-	my $n = $s->netsunits;
+	my $f = $s->parent->bfile;
+	my $h = $s->parent->header;
+	my $n = $s->parent->netsunits;
+	my $t = $s->parent->systems;
 
 	my $skip   = 'x[' . ($h->networkCount-1)*2 .  ']';
 
@@ -71,10 +68,11 @@ sub parse {
 
 	foreach my $idxNet (0..$h->networkCount-1) {
 		my $format = 'x[' . $idxNet * 2  . '](S' .  $skip . ')' 
-			. ($s->header->unitCount-1) .  's'; 
+			. ($h->unitCount-1) .  's'; 
 		my @row = unpack($format,$b);
 		foreach my $idxUnit (0..$h->unitCount-1) {
-			$n->at($idxNet,$idxUnit)->system($row[$idxUnit]);
+			my $system = $t->at($row[$idxUnit]-1);
+			$n->at($idxNet,$idxUnit)->system($system);
 		}
 	}
 
