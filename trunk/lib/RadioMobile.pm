@@ -38,6 +38,7 @@
 								nets	=> { isa  => 'RadioMobile::Nets'},
 								netsunits	=> { isa  => 'RadioMobile::NetsUnits'},
 								config	=> { isa  => 'RadioMobile::Config'},
+								cov		=> { isa  => 'RadioMobile::Cov'},
 
 	);
 
@@ -48,12 +49,13 @@
 		'nets'		=> 'RadioMobile::Nets',
 		'netsunits'	=> 'RadioMobile::NetsUnits',
 		'config'	=> 'RadioMobile::Config',
+		'cov'		=> 'RadioMobile::Cov',
 	);
 
 	use Class::MethodMaker [ scalar => [qw/filepath debug header units 
-		bfile file systems nets netsunits config/] ];
+		bfile file systems nets netsunits config cov/] ];
 
-	our $VERSION	= '0.05';
+	our $VERSION	= '0.06';
 
 	sub new {
 		my $proto 	= shift;
@@ -129,8 +131,8 @@
 
 		# read and unpack coverage
 		$s->_cb($cb,10800,"Parsing Coverage");
-		my $cov = new RadioMobile::Cov;
-		$cov->parse($s->bfile);
+		$s->cov->parse($s->bfile);
+		print "Coverage: " . $s->cov->dump . "\n" if $s->debug;
 		$s->_cb($cb,10800,"Parsing Coverage");
 
 		# lettura del percorso al file map
@@ -412,6 +414,10 @@ Returns a L<RadioMobile::Systems> object with a list of all systems.
 =head2 nets()
 
 Returns a L<RadioMobile::Nets> object with a list of all networks.
+
+=head2 cov()
+
+Returns a L<RadioMobile::Cov> object with parameters about coverage window.
 
 =head2 netsunits
 

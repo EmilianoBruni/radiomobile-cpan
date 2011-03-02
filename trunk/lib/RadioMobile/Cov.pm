@@ -9,7 +9,7 @@ use base qw(Class::Container);
 
 use File::Binary;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.02';
 
 # COVERAGE STRUCTURE - Len 74 bytes
 # DMAX				([f] single-precision float - VB Single type - 4 bytes),
@@ -49,6 +49,11 @@ sub parse {
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
 }
 
+
+sub dump {
+	my $s   = shift;
+	return Data::Dumper::Dumper($s->dump_parameters);
+}
 1;
 
 __END__
