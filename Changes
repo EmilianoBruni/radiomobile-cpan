@@ -1,5 +1,8 @@
 Revision history for Perl extension RadioMobile.
 
+0.06  Wed Mar  2 11:59:19 CET 2011
+	- Coverage had been parsed but didn't exist in RadioMobile methods tree.
+
 0.05  Thu Feb 17 17:50:00 CET 2011
 	- According to documentation, NetUnit->system return its system object 
 		and not its system index.
