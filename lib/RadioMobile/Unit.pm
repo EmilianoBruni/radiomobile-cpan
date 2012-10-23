@@ -43,6 +43,12 @@ sub parse {
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
 }
 
+sub write {
+	my $s	 	= shift;
+	my $f	  	= shift;
+	$f->put_bytes(pack(PACK, map ($s->{(ITEMS)[$_]},(0..(ITEMS)-1))));
+}
+
 sub dump {
 	my $s	= shift;
 	return Data::Dumper::Dumper($s->dump_parameters);

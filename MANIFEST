@@ -4,11 +4,11 @@ MANIFEST
 README
 docs/radiomobile_object_model.pdf
 t/net1.net
-t/RadioMobile.t
 t/Matrix.t
 t/Nets.t
 t/Net.t
-t/RadioMobile.t
+t/10_parse.t
+t/20_write.t
 t/System.t
 lib/RadioMobile.pm
 lib/RadioMobile/Header.pm
