@@ -23,6 +23,16 @@ sub parse {
 	}
 }
 
+sub write {
+	my $s	 	= shift;
+	my $f	  	= $s->container->bfile;
+	my $len		= $s->container->header->unitCount;
+	foreach (0..$len-1) {
+		my $unit = $s->at($_);
+		$unit->write($f);
+	}
+}
+
 sub dump {
 	my $s	= shift;
 	my $ret	= "UNITS => [\n";

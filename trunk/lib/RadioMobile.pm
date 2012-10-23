@@ -235,6 +235,23 @@
 		$s->bfile->close;
 	}
 
+sub write {
+	my $s			= shift;
+	# open binary .net file
+	my $data ='';
+	#my $io			= new IO::Scalar(\$data);
+    	#$s->{bfile} 	= new File::Binary($io);
+    	$s->{bfile} 	= new File::Binary(">pippo.net");
+#	$s->{bfile}->set_endian(2);
+	
+	$s->header->write;
+	$s->units->write;
+	
+	$s->bfile->close;
+
+	return $data;
+}
+
 sub _cb {
 	my $s		= shift;
 	my $cb		= shift;
