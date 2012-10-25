@@ -12,7 +12,7 @@ __PACKAGE__->contained_objects();
 
 use RadioMobile::NetUnit;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 sub new {
 	my $package = shift;
@@ -84,6 +84,21 @@ sub parse {
 #push @unitRole, [map {$_ > 127 ? $_-128 : $_ } @$item] 
 #}
 
+}
+
+sub write {
+	my $s = shift;
+	my $f = $s->container->bfile;
+	my $h = $s->container->header;
+	foreach my $unitIdx (0..$h->unitCount-1) {
+		foreach my $netIdx (0..$h->networkCount-1) {
+			my $netunit = $s->at($netIdx,$unitIdx);
+			my $byte = $netunit->isIn ? 0x80 : 0x00;
+			$byte |= $netunit->role;
+			$f->put_bytes(pack("C",$byte));
+		}
+	}
+	
 }
 
 sub dump {

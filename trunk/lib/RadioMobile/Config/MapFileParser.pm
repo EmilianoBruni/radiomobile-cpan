@@ -1,6 +1,6 @@
 package RadioMobile::Config::MapFileParser;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 use strict;
 use warnings;
@@ -36,6 +36,21 @@ sub parse {
 		$map_file = unpack("A$l",$f->get_bytes($l));
 	} 
 	$c->mapfilepath($map_file);
+}
+
+sub write {
+	my $s		= shift;
+
+	my $f	  	= $s->bfile;
+	my $c		= $s->config;
+
+	my $cstring	= $c->mapfilepath;
+	my $l		= length($cstring);
+	
+	$f->put_bytes(pack("s",$l));
+	if ($l > 0) {
+		$f->put_bytes(pack("A$l",$cstring));
+	} 
 }
 
 1;

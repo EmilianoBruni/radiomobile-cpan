@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.02';
+our $VERSION    = '0.10';
 
 __PACKAGE__->valid_params( 
 							bfile	=> {isa => 'File::Binary'},
@@ -73,6 +73,18 @@ sub parse {
 	}
 }
 
+sub write {
+	my $s = shift;
+	my $f = $s->bfile;
+	my $h = $s->header;
+	my $n = $s->netsunits;
+	foreach my $idxUnit (0..$h->unitCount-1) {
+		foreach my $idxNet (0..$h->networkCount-1) {
+			$f->put_bytes(pack("f",$n->at($idxNet,$idxUnit)->height));
+		}
+	}
+	
+}
 
 1;
 

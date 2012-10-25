@@ -10,7 +10,7 @@ use File::Binary;
 
 use RadioMobile::Net;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 sub parse {
 	my $s	= shift;
@@ -20,6 +20,16 @@ sub parse {
 		my $net = $s->length >= $_ ? $s->at($_-1) : new RadioMobile::Net;
 		$net->parse($f);
 		$s->push($net) unless ($s->at($_-1));
+	}
+}
+
+sub write {
+	my $s	 	= shift;
+	my $f	  	= $s->container->bfile;
+	my $len		= $s->container->header->networkCount;
+	foreach (0..$len-1) {
+		my $net = $s->at($_);
+		$net->write($f);
 	}
 }
 

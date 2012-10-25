@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 __PACKAGE__->valid_params( parent => { isa  => 'Class::Container'} ) ;
 use Class::MethodMaker [ scalar => [qw/parent/] ];
@@ -48,6 +48,17 @@ sub parse {
 
 	foreach (0..$l-1) {
 		$o->at($_)->cableloss($lineLossPerMeter[$_]);
+	}
+}
+
+sub write {
+	my $s = shift;
+	my $f = $s->parent->bfile;
+	my $l = $s->parent->header->systemCount;
+	my $o = $s->parent->systems;
+
+	foreach (0..$l-1) {
+		$f->put_bytes(pack('f',$o->at($_)->cableloss));
 	}
 }
 

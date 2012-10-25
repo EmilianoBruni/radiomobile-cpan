@@ -11,7 +11,7 @@ use base qw(Class::Container);
 
 use File::Binary;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 # NET STRUCTURE - Len 72 bytes
 # MINFX				([f] single-precision float - VB Single type - 4 bytes),
@@ -55,6 +55,12 @@ sub parse {
 	my $f	  	= shift;
 	my @struct 	= unpack(PACK,$f->get_bytes(LEN));
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
+}
+
+sub write {
+	my $s	 	= shift;
+	my $f	  	= shift;
+	$f->put_bytes(pack(PACK, map ($s->{(ITEMS)[$_]},(0..(ITEMS)-1))));
 }
 
 sub reset {

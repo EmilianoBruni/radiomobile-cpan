@@ -1,6 +1,6 @@
 package RadioMobile::Config::StyleNetworksPropertiesParser;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 use strict;
 use warnings;
@@ -70,6 +70,20 @@ sub parse {
 	$snp->drawBg(hex($struct[2]) & 0x01);
 	$snp->twoRay(!((hex($struct[3]) & 0x02) >> 1));
 	$snp->twoRayType((hex($struct[3]) & 0x01) ? 'interference' : 'normal');
+}
+
+sub write {
+	my $s		= shift;
+
+	my $f	  	= $s->bfile;
+	my $snp		= $s->config->stylenetworksproperties;
+
+	$f->put_bytes(pack('C', (($snp->drawRed ? 1:0) <<7) | ($snp->rxYellow+50)));
+	$f->put_bytes(pack('C', (($snp->drawYellow ? 1:0) <<7) | ($snp->rxGreen+50)));
+	$f->put_bytes(pack('C', (($snp->drawGreen ? 1:0) <<7) | ($snp->drawBg ? 1:0)));
+	$f->put_bytes(pack('C', (($snp->twoRay?0:1) <<1) | ($snp->twoRayType eq 'interference' ?1:0)));
+	$f->put_bytes(pack('C3', 0));
+	
 }
 
 1;

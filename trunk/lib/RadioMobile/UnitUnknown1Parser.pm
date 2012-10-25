@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 __PACKAGE__->valid_params( parent => { isa  => 'Class::Container'} ) ;
 use Class::MethodMaker [ scalar => [qw/parent/] ];
@@ -53,6 +53,19 @@ sub parse {
 
 	foreach (0..$l-1) {
 		$o->at($_)->unknown1($u[$_]);
+	}
+}
+
+sub write {
+	my $s = shift;
+	my $f = $s->parent->bfile;
+	my $h = $s->parent->header;
+	my $o = $s->parent->units;
+
+	$f->put_bytes(pack("s",$h->unitCount));
+
+	foreach (0..$h->unitCount-1) {
+		$f->put_bytes(pack("s",$o->at($_)->unknown1));
 	}
 }
 
