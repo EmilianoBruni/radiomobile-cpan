@@ -1,6 +1,6 @@
 package RadioMobile::Config::Pictures;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 use strict;
 use warnings;
@@ -19,6 +19,15 @@ sub parse {
         # process pic_file: TO DO!!!???
         $l = unpack("s",$f->get_bytes(2));
     }
+}
+
+sub write {
+	my $s		= shift;
+
+	my $f	  	= $s->container->container->bfile;
+
+	# to do... currently we print no elements
+	$f->put_bytes(pack("s",0));
 }
 
 sub dump {

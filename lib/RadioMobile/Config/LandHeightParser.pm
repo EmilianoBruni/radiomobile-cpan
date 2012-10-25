@@ -1,6 +1,6 @@
 package RadioMobile::Config::LandHeightParser;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 use strict;
 use warnings;
@@ -30,13 +30,27 @@ sub parse {
 	my $f	  	= $s->bfile;
 	my $c		= $s->config;
 
+	my $landheight = '';
 	# leght of landheight.dat path
 	my $l = unpack("s",$f->get_bytes(2));
-	my $landheight = '';
-	if ($l > 0) {
+	if ($l >0) {
 		$landheight = unpack("A$l",$f->get_bytes($l));
+		$c->landheight($landheight);
+	}
+}
+
+sub write {
+	my $s		= shift;
+
+	my $f	  	= $s->bfile;
+	my $c		= $s->config;
+
+	# lenght of landheight.dat path
+	my $l = length($c->landheight);
+	$f->put_bytes(pack('s', $l));
+	if ($l > 0) {
+		$f->put_bytes(pack("A$l",$c->landheight));
 	} 
-	$c->landheight($landheight);
 }
 
 1;

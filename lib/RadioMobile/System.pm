@@ -11,7 +11,7 @@ use base qw(Class::Container);
 
 use File::Binary;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 # SYSTEM STRUCTURE - Len 50 bytes
 # TX                ([f] single-precision float - VB Single type - 4 bytes),
@@ -25,8 +25,8 @@ use constant LEN	=> 50;
 use constant PACK	=> 'fffffA30';
 use constant ITEMS	=> qw/tx rx loss ant h name cableloss antenna/;
 
-__PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
-use Class::MethodMaker [scalar => [ITEMS]];
+__PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS), idx => {type => SCALAR});
+use Class::MethodMaker [scalar => [ITEMS,'idx']];
 
 sub new {
 	my $package = shift;
@@ -39,6 +39,12 @@ sub parse {
 	my $f	  	= shift;
 	my @struct 	= unpack(PACK,$f->get_bytes(LEN));
 	map {$s->{(ITEMS)[$_]} = $struct[$_]} (0..(ITEMS)-1);
+}
+
+sub write {
+	my $s	 	= shift;
+	my $f	  	= shift;
+	$f->put_bytes(pack(PACK, map ($s->{(ITEMS)[$_]},(0..(ITEMS)-1))));
 }
 
 sub dump {

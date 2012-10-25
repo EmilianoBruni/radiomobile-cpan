@@ -55,7 +55,7 @@
 	use Class::MethodMaker [ scalar => [qw/filepath debug header units 
 		bfile file systems nets netsunits config cov/] ];
 
-	our $VERSION	= '0.06';
+	our $VERSION	= '0.07';
 
 	sub new {
 		my $proto 	= shift;
@@ -242,10 +242,41 @@ sub write {
 	#my $io			= new IO::Scalar(\$data);
     	#$s->{bfile} 	= new File::Binary($io);
     	$s->{bfile} 	= new File::Binary(">pippo.net");
-#	$s->{bfile}->set_endian(2);
 	
 	$s->header->write;
 	$s->units->write;
+	$s->systems->write;
+	$s->netsunits->write;
+	my $ns = new RadioMobile::UnitsSystemParser( parent => $s );
+	$ns->write;
+	$s->nets->write;
+	$s->cov->write($s->bfile);
+	$s->config->write_mapfilepath;
+	$s->config->pictures->write;
+	my $hp = new RadioMobile::UnitsHeightParser(
+							bfile 		=> $s->bfile,
+							header		=> $s->header,
+							netsunits 	=> $s->netsunits
+						);
+	$hp->write;
+	my $up = new RadioMobile::UnitIconParser(parent => $s);
+	$up->write;
+	my $cp = new RadioMobile::SystemCableLossParser(parent => $s);
+	$cp->write;
+	$s->config->write_stylenetworks;
+	my $un = new RadioMobile::NetUnknown1Parser(parent => $s);
+	$un->write;
+	my $ap = new RadioMobile::SystemAntennaParser(parent => $s);
+	$ap->write;
+	my $ad = new RadioMobile::UnitsAzimutDirectionParser(parent => $s);
+	$ad->write;
+	my $uu = new RadioMobile::UnitUnknown1Parser(parent => $s);
+	$uu->write;
+	my $ep = new RadioMobile::UnitsElevationParser(parent => $s);
+	$ep->write;
+	$s->bfile->put_bytes(pack('s',$s->header->version));
+	$s->bfile->put_bytes(pack('s',0));
+	$s->config->write_landheight;
 	
 	$s->bfile->close;
 

@@ -10,16 +10,27 @@ use File::Binary;
 
 use RadioMobile::System;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 sub parse {
 	my $s	 	= shift;
 	my $f	  	= $s->container->bfile;
 	my $len		= $s->container->header->systemCount;
-	foreach (1..$len) {
+	foreach (0..$len-1) {
 		my $system = new RadioMobile::System;
 		$system->parse($f);
+		$system->idx($_);
 		$s->push($system);
+	}
+}
+
+sub write {
+	my $s	 	= shift;
+	my $f	  	= $s->container->bfile;
+	my $len		= $s->container->header->systemCount;
+	foreach (0..$len-1) {
+		my $system = $s->at($_);
+		$system->write($f);
 	}
 }
 

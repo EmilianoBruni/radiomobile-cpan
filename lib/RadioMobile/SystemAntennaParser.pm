@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 __PACKAGE__->valid_params( parent => { isa  => 'Class::Container'} ) ;
 use Class::MethodMaker [ scalar => [qw/parent/] ];
@@ -57,6 +57,19 @@ sub parse {
 		} else {
 			$o->at($_)->antenna('');
 		}
+	}
+}
+sub write {
+	my $s = shift;
+	my $f = $s->parent->bfile;
+	my $h = $s->parent->header;
+	my $o = $s->parent->systems;
+
+	$f->put_bytes(pack("s",$h->systemCount));
+ 	foreach (0..$h->systemCount-1) {
+		my $antennaName = $o->at($_)->antenna;
+		$f->put_bytes(pack('s',length($antennaName)));
+		$f->put_bytes(pack('a' . length($antennaName),$antennaName));
 	}
 }
 

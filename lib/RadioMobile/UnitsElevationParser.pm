@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 __PACKAGE__->valid_params( 
 							parent	=> {isa => 'RadioMobile'},
@@ -68,6 +68,24 @@ sub parse {
 			my $unit = $n->at($idxNet,$idxUnit);
 			my $elevation = $elevation[$idxUnit];
 			$unit->elevation($elevation/10);
+		}
+	}
+}
+
+sub write {
+	my $s = shift;
+	my $f = $s->parent->bfile;
+	my $n = $s->parent->netsunits;
+	my $h = $s->parent->header;
+
+	$f->put_bytes(pack('s',$h->networkCount));
+	$f->put_bytes(pack('s',$h->unitCount));
+	# a short integer set how much units enabled in ElevationAngle
+
+	foreach my $idxUnit (0..$h->unitCount-1) {
+		foreach my $idxNet (0..$h->networkCount-1) {
+			my $unit = $n->at($idxNet,$idxUnit);
+			$f->put_bytes(pack('S',$unit->elevation* 10));
 		}
 	}
 }

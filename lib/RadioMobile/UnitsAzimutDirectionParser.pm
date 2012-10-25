@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 __PACKAGE__->valid_params( 
 							parent	=> {isa => 'RadioMobile'},
@@ -68,6 +68,23 @@ sub parse {
 			} else {
 				$unit->azimut($azimut/10);
 				$unit->direction('');
+			}
+		}
+	}
+}
+sub write {
+	my $s = shift;
+	my $f = $s->parent->bfile;
+	my $h = $s->parent->header;
+	my $n = $s->parent->netsunits;
+
+	foreach my $idxUnit (0..$h->unitCount-1) {
+		foreach my $idxNet (0..$h->networkCount-1) {
+			my $unit = $n->at($idxNet,$idxUnit);
+			if ($unit->direction eq '') {
+				$f->put_bytes(pack('S',$unit->azimut*10));
+			} else {
+				$f->put_bytes(pack('S',$unit->direction+10000));
 			}
 		}
 	}
