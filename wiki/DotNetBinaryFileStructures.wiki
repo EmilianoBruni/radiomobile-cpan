@@ -184,11 +184,10 @@ Given b(1) the first bit, b(2..8) the bits from 2 to 8 we find that
   * b(1): Enabled (1) or disabled (0) "Draw a red line..."
   * b(2..8): an unsigned short to draw yellow line if RX >= b(2..8) - 50
   * b(9): Enabled (1) or disabled (0) "Draw a yellow line..."
-  * b(10..16): an unsigned short to draw yellow line if RX >= b(10..16) - 50
+  * b(10..16): an unsigned short to draw green line if RX >= b(10..16) - 50
   * b(17): Enabled (1) or disabled (0) "Draw a green line..."
   * b(18..23): Not used
   * b(24): Enabled (1) or disabled (0) "Draw lines with dark background"
   * b(25..30: Not used
   * b(31): Enabled (0) or disabled (1) "Use Two Rays..."
   * b(32): Normal (0) or Interference (1) Two Ray Los
-
