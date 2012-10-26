@@ -2,7 +2,6 @@
 
 	use 5.008000;
 	use strict;
-	use warnings;
 
 	use Class::Container;
 	use Params::Validate qw(:types);
@@ -10,6 +9,12 @@
 
 	use File::Binary;
 	use IO::Scalar;
+	sub IO::Scalar::write {
+		# rewrote write to work with File::Binary
+		my $self = $_[0];
+		$self->print($_[1]);
+	}
+	use warnings;
 
 	use RadioMobile::Header;
 	use RadioMobile::Units;
@@ -239,9 +244,9 @@ sub write {
 	my $s			= shift;
 	# open binary .net file
 	my $data ='';
-	#my $io			= new IO::Scalar(\$data);
-    	#$s->{bfile} 	= new File::Binary($io);
-    	$s->{bfile} 	= new File::Binary(">pippo.net");
+	my $io			= new IO::Scalar(\$data);
+    $s->{bfile} 	= new File::Binary($io);
+    #$s->{bfile} 	= new File::Binary(">pippo.net");
 	
 	$s->header->write;
 	$s->units->write;
