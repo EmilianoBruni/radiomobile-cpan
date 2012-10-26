@@ -10,7 +10,7 @@ use File::Binary;
 
 use RadioMobile::Unit;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 sub parse {
 	my $s	 	= shift;
@@ -19,7 +19,7 @@ sub parse {
 	foreach (1..$len) {
 		my $unit = new RadioMobile::Unit;
 		$unit->parse($f);
-		$s->push($unit);
+		$s->add($unit);
 	}
 }
 
@@ -41,6 +41,23 @@ sub dump {
 	}
 	$ret .= "]\n";
 	return $ret;
+}
+
+sub add {
+	my $s		= shift;
+	my $item	= shift;
+	$s->push($item);
+	$s->container->header->unitCount($s->length);
+	$s->at(-1)->idx($s->length-1);
+	return $s->at(-1);
+}
+
+sub addNew {
+	my $s		= shift;
+	my $name	= shift;
+	my $item = new RadioMobile::Unit;
+	$item->name($name);
+	return $s->add($item)
 }
 
 1;

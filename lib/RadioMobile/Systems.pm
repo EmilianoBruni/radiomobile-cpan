@@ -19,8 +19,7 @@ sub parse {
 	foreach (0..$len-1) {
 		my $system = new RadioMobile::System;
 		$system->parse($f);
-		$system->idx($_);
-		$s->push($system);
+		$s->add($system);
 	}
 }
 
@@ -42,6 +41,23 @@ sub dump {
 	}
 	$ret .= "]\n";
 	return $ret;
+}
+
+sub add {
+	my $s		= shift;
+	my $item	= shift;
+	$s->push($item);
+	$s->container->header->systemCount($s->length);
+	$s->at(-1)->idx($s->length-1);
+	return $s->at(-1);
+}
+
+sub addNew {
+	my $s		= shift;
+	my $name	= shift;
+	my $item = new RadioMobile::System;
+	$item->name($name);
+	return $s->add($item)
 }
 
 1;

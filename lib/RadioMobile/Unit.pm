@@ -24,15 +24,14 @@ use constant LEN	=> 44;
 use constant PACK	=> 'fffssllA20';
 use constant ITEMS	=> qw/lon lat h enabled transparent forecolor 
 							backcolor name icon unknown1/;
+use constant DEFAULTS => qw/0 0 0 1 0 16777215 0 Unit1 1 1/;
 
-__PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
-use Class::MethodMaker [scalar => [ITEMS]];
+__PACKAGE__->valid_params ( map {(ITEMS)[$_] =>{type=>SCALAR, default=> (DEFAULTS)[$_]}} (0..(ITEMS)-1));
+use Class::MethodMaker [scalar => [ITEMS,'idx']];
 
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
-	$s->icon(0);
-	$s->unknown1(undef);
 	return $s;
 }
 
