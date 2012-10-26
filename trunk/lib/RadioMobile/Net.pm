@@ -33,15 +33,15 @@ use constant LEN	=> 72;
 use constant PACK	=> 'ffsfffssfffssA30';
 use constant ITEMS	=> qw/minfx maxfx pol eps sgm ens climate mdvar time location
 							situation hops topology name unknown1/;
+use constant DEFAULTS => qw/144 148 1 15 0.00499999988824129 301 5 0 50 50 70 0 256 Net1 0/;
 
 
-__PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
-use Class::MethodMaker [scalar => [ITEMS]];
+__PACKAGE__->valid_params ( map {(ITEMS)[$_] =>{type=>SCALAR, default=> (DEFAULTS)[$_]}} (0..(ITEMS)-1));
+use Class::MethodMaker [scalar => [ITEMS,'idx']];
 
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
-	$s->unknown1('');
 	return $s;
 }
 
@@ -66,24 +66,10 @@ sub write {
 sub reset {
 	my $s	= shift;
 	my $index = shift;
-	my %def	  = (
-					'minfx' => '144',
-					'location' => '50',
-					'situation' => '70',
-					'maxfx' => '148',
-					'time' => '50',
-					'topology' => 256,
-					'eps' => '15',
-					'climate' => 5,
-					'sgm' => '0.00499999988824129',
-					'ens' => '301',
-					'pol' => 1,
-					'mdvar' => 0,
-					'hops' => 0
-				);
-	while (my ($k,$v) = each %def) { $s->$k($v) }
+	map {$s->{(ITEMS)[$_]} = (DEFAULTS)[$_]} (0..(ITEMS)-1);
 	$s->name(sprintf('Net%3.3s', $index));
 }
+
 1;
 
 __END__

@@ -19,7 +19,7 @@ sub parse {
 	foreach (1..$len) {
 		my $net = $s->length >= $_ ? $s->at($_-1) : new RadioMobile::Net;
 		$net->parse($f);
-		$s->push($net) unless ($s->at($_-1));
+		$s->add($net) unless ($s->at($_-1));
 	}
 }
 
@@ -48,10 +48,25 @@ sub reset {
 	my $len = shift || $s->container->header->networkCount;
 	$s->clear();
 	foreach (1..$len) {
-		my $net = new RadioMobile::Net;
-		$net->reset($_);
-		$s->push($net);
+		$s->addNew(sprintf('Net%3.3s', $len));
 	}
+}
+
+sub add {
+	my $s		= shift;
+	my $item	= shift;
+	$s->push($item);
+	$s->container->header->networkCount($s->length);
+	$s->at(-1)->idx($s->length-1);
+	return $s->at(-1);
+}
+
+sub addNew {
+	my $s		= shift;
+	my $name	= shift;
+	my $item = new RadioMobile::Net;
+	$item->name($name);
+	return $s->add($item)
 }
 
 

@@ -31,6 +31,7 @@ use Class::MethodMaker [ scalar => [qw/stylenetworksproperties mapfilepath
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
+	$s->_init();
 	return $s;
 }
 
@@ -100,6 +101,12 @@ sub dump {
 		$ret .= '| ' . join(' | ',@func) . " |\n";
 	}
 	return $ret;
+}
+
+sub _init {
+	my $s	= shift;
+	$s->landheight('');
+	$s->mapfilepath('');
 }
 
 1;

@@ -24,8 +24,9 @@ our $VERSION    = '0.10';
 use constant LEN	=> 50;
 use constant PACK	=> 'fffffA30';
 use constant ITEMS	=> qw/tx rx loss ant h name cableloss antenna/;
+use constant DEFAULTS => qw/10 -107 0.5 2 2 System1 0 omni.ant/;
 
-__PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS), idx => {type => SCALAR});
+__PACKAGE__->valid_params ( map {(ITEMS)[$_] =>{type=>SCALAR, default=> (DEFAULTS)[$_]}} (0..(ITEMS)-1));
 use Class::MethodMaker [scalar => [ITEMS,'idx']];
 
 sub new {
@@ -55,12 +56,7 @@ sub dump {
 sub reset {
 	my $s	= shift;
 	my $index = shift;
-	$s->tx(10);
-	$s->h(2);
-	$s->rx(-107);
-	$s->loss(0.5);
-	$s->ant(2);
-	$s->cableloss(0);
+	map {$s->{(ITEMS)[$_]} = (DEFAULTS)[$_]} (0..(ITEMS)-1);
 	$s->name(sprintf('System%4.4s', $index));
 }
 

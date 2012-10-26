@@ -30,6 +30,8 @@ $rm->parse;
 ok($rm->config->landheight =~ /landheight/i, 'Check last parsing element in file mode');
 
 # testing callback
+$rm 		= new RadioMobile(debug => $ENV{'RM_DEBUG'} || 0);
+$rm->filepath($filepath);
 $rm->parse(\&cb);
 
 

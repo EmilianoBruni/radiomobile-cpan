@@ -22,6 +22,7 @@ our $VERSION    = '0.01';
 use constant LEN	=> 10;
 use constant PACK	=> 'fsss';
 use constant ITEMS	=> qw/version networkCount unitCount systemCount/;
+use constant DEFAULTS => qw/4000 0 0 0/;
 
 __PACKAGE__->valid_params ( map {$_ => {type => SCALAR, default => 1}} (ITEMS));
 use Class::MethodMaker [scalar => [ITEMS]];
@@ -29,6 +30,7 @@ use Class::MethodMaker [scalar => [ITEMS]];
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
+	$s->_init;
 	return $s;
 }
 sub parse {
@@ -47,6 +49,11 @@ sub write {
 sub dump {
 	my $s	= shift;
 	return Data::Dumper::Dumper($s->dump_parameters);
+}
+
+sub _init {
+	my $s	= shift;
+	map {$s->{(ITEMS)[$_]} = (DEFAULTS)[$_]} (0..(ITEMS)-1);
 }
 
 1;
