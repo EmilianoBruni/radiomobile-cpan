@@ -13,6 +13,5 @@ BEGIN { use_ok('RadioMobile') };
 my $rm = new RadioMobile(debug => $ENV{'RM_DEBUG'} || 0);
 $rm->filepath($filepath);
 $rm->parse;
-
 $rm->write;
 
