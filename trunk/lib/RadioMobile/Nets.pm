@@ -48,7 +48,7 @@ sub reset {
 	my $len = shift || $s->container->header->networkCount;
 	$s->clear();
 	foreach (1..$len) {
-		$s->addNew(sprintf('Net%3.3s', $len));
+		$s->addNew(sprintf('Net%3.3s', $_));
 	}
 }
 
@@ -56,8 +56,21 @@ sub add {
 	my $s		= shift;
 	my $item	= shift;
 	$s->push($item);
-	$s->container->header->networkCount($s->length);
-	$s->at(-1)->idx($s->length-1);
+	my $net = $s->at(-1);
+	$net->idx($s->length-1);
+	if ($s->container) {
+		# sincronizzo header
+		$s->container->header->networkCount($s->length);
+		my $nus		= $s->container->netsunits;
+		# se serve, sincronizzo NetsUnits
+		unless ($s->container->units->length == 0) {
+			unless (defined $nus->at($net->idx,0)) {
+				foreach my $idxUnit (0..$s->container->header->unitCount-1) {
+					$nus->resetNetUnit($idxUnit,$net->idx);
+				}
+			}
+		}
+	}
 	return $s->at(-1);
 }
 

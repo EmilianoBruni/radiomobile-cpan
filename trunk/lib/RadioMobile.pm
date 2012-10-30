@@ -19,7 +19,7 @@
 	use RadioMobile::Header;
 	use RadioMobile::Units;
 	use RadioMobile::UnitIconParser;
-	use RadioMobile::UnitUnknown1Parser;
+	use RadioMobile::UnitDescriptionParser;
 	use RadioMobile::UnitsSystemParser;
 	use RadioMobile::UnitsHeightParser;
 	use RadioMobile::UnitsAzimutDirectionParser;
@@ -209,11 +209,11 @@
 		$s->_cb($cb,11700,"Reading Azimut/Direction for Units");
 
 		# read unknown units property
-		$s->_cb($cb,11800,"Parsing Unknown Unit structure");
-		my $uu = new RadioMobile::UnitUnknown1Parser(parent => $s);
+		$s->_cb($cb,11800,"Parsing Description Unit structure");
+		my $uu = new RadioMobile::UnitDescriptionParser(parent => $s);
 		$uu->parse;
-		print "UNITS after unknown1 structure: " .  $s->units->dump if $s->debug;
-		$s->_cb($cb,11800,"Parsing Unknown Unit structure");
+		print "UNITS after description structure: " .  $s->units->dump if $s->debug;
+		$s->_cb($cb,11800,"Parsing Description Unit structure");
 
 		# read elevation antenas
 		$s->_cb($cb,11900,"Reading Elevation for Units");
@@ -275,11 +275,11 @@ sub write {
 	$ap->write;
 	my $ad = new RadioMobile::UnitsAzimutDirectionParser(parent => $s);
 	$ad->write;
-	my $uu = new RadioMobile::UnitUnknown1Parser(parent => $s);
+	my $uu = new RadioMobile::UnitDescriptionParser(parent => $s);
 	$uu->write;
 	my $ep = new RadioMobile::UnitsElevationParser(parent => $s);
 	$ep->write;
-	$s->bfile->put_bytes(pack('s',$s->header->version));
+	$s->bfile->put_bytes(pack('f',$s->header->version));
 	$s->bfile->put_bytes(pack('s',0));
 	$s->config->write_landheight;
 	

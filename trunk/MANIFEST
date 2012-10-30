@@ -9,6 +9,7 @@ t/Nets.t
 t/Net.t
 t/10_parse.t
 t/20_write.t
+t/30_newnet.t
 t/System.t
 lib/RadioMobile.pm
 lib/RadioMobile/Header.pm
@@ -38,4 +39,4 @@ lib/RadioMobile/UnitsSystemParser.pm
 lib/RadioMobile/UnitsHeightParser.pm
 lib/RadioMobile/UnitsAzimutDirectionParser.pm
 lib/RadioMobile/Utils/Matrix.pm
-lib/RadioMobile/UnitUnknown1Parser.pm
+lib/RadioMobile/UnitDescriptionParser.pm

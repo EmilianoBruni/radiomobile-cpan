@@ -109,9 +109,37 @@ sub dump {
 	foreach (0..$s->rowsCount-1) {
 		my @row 	= $s->rows->at($_)->list;
 		my @func	= map {$_->$method} @row;
+		@func = map(defined $_ ? $_ : '',@func);
 		$ret .= '| ' . join(' | ',@func) . " |\n";
 	}
 	return $ret;
+}
+
+sub sync {
+	my $s	= shift;
+	my $h = $s->container->header;
+	foreach my $unitIdx (0..$h->unitCount-1) {
+		foreach my $netIdx (0..$h->networkCount-1) {
+			my $netunit = $s->at($netIdx,$unitIdx);
+			unless (defined $netunit) {
+				# se non esiste creo l'elemento
+				$s->resetNetUnit($unitIdx,$netIdx);
+			}
+		}
+	}
+}
+
+sub resetNetUnit {
+	my $s		= shift;
+	my $unitIdx	= shift;
+	my $netIdx	= shift;
+
+	my $unit	= $s->container->units->at($unitIdx);
+	my $net		= $s->container->nets->at($netIdx);
+	my $netunit = new RadioMobile::NetUnit(unit => $unit, net => $net);
+	$netunit->system($s->container->systems->at(0));
+	$s->at($netIdx,$unitIdx,$netunit);
+	
 }
 
 

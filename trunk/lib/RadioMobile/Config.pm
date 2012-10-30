@@ -19,6 +19,10 @@ __PACKAGE__->valid_params(
 							stylenetworksproperties	=> { isa  =>
 								'RadioMobile::Config::StyleNetworksProperties'},
 							pictures	=> { isa  => 'RadioMobile::Config::Pictures'},
+							landheight => {type => SCALAR, 
+								default => 'C:\Program Files (x86)\Radio Mobile\landheight.dat'},
+							mapfilepath => {type => SCALAR,  
+								default => ''},
 );
 __PACKAGE__->contained_objects(
 	stylenetworksproperties => 'RadioMobile::Config::StyleNetworksProperties',
@@ -31,7 +35,6 @@ use Class::MethodMaker [ scalar => [qw/stylenetworksproperties mapfilepath
 sub new {
 	my $package = shift;
 	my $s = $package->SUPER::new(@_);
-	$s->_init();
 	return $s;
 }
 
@@ -103,10 +106,5 @@ sub dump {
 	return $ret;
 }
 
-sub _init {
-	my $s	= shift;
-	$s->landheight('');
-	$s->mapfilepath('');
-}
 
 1;
