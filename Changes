@@ -1,5 +1,10 @@
 Revision history for Perl extension RadioMobile.
 
+0.10  Tue Oct 30 14:35:54 CET 2012
+	- Various changes
+	- Understood the Unknown1 Unit field which is a long string unit description
+	- Now this module writes Radio Mobile .net files from scratch
+
 0.06  Wed Mar  2 11:59:19 CET 2011
 	- Coverage had been parsed but didn't exist in RadioMobile methods tree.
 
