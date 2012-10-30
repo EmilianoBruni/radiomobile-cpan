@@ -1,6 +1,6 @@
 package RadioMobile::Utils::Matrix;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.10';
 
 use strict;
 use warnings;
@@ -46,6 +46,7 @@ sub at {
 		$s->colsCount($col+1) if ($col+1 > $s->colsCount);
 		$s->rows->at($row)->set($col,$v)
 	}
+	return undef unless ($s->rows->at($row));
 	return $s->rows->at($row)->at($col);
 }
 
@@ -88,7 +89,7 @@ sub colsCount {
 		my $diff = $newSize - $s->rows->at(0)->length;
 		if ($diff > 0) {
 			my @push;
-			push @push, 0 foreach (1..$diff);
+			push @push, undef foreach (1..$diff);
 			foreach (0..$s->rowsCount-1) {
 				$s->rows->at($_)->push(@push);
 			}
@@ -134,7 +135,7 @@ sub addCol {
 sub _newRow {
 	my $s	= shift;
 	my $r	= new Array::AsObject;
-	$r->fill(0,0,$s->colsCount);
+	$r->fill(undef,0,$s->colsCount);
 	return $r;
 }
 
@@ -157,6 +158,7 @@ sub dump {
 	my $ret = '';
 	foreach (0..$s->rowsCount-1) {
 		my @row = $s->rows->at($_)->list;
+		@row = map(defined $_ ? $_ : '',@row);
 		$ret .= '| ' . join(' | ',@row) . " |\n";
 	}
 	return $ret;

@@ -18,6 +18,7 @@ my $unit = $rm->units->addNew('Casa di Emiliano');
 $unit->lat(32.452532);
 $unit->lon(14.535235);
 $unit->h(43.33);
+$unit->description('La casa di Emiliano in descrizione lunga');
 
 #via new
 $unit = new RadioMobile::Unit(name => 'Casa di Sugo', lat => 33.535, lon => 13, h => 300);
@@ -29,31 +30,26 @@ $rm->units->add($unit);
 my $system = $rm->systems->addNew('3Sect120');
 $system->rx(-89);
 $system->tx(3.2);
-$system->antenna('3sect120.ant');
+$system->antenna('cardio.ant');
 $system->h(10);
 
 #via new
-$system = new RadioMobile::System(name => '1Sect120', rx => -89, tx => 3.2, h => 15, antenna => '1sect120.ant' );
+$system = new RadioMobile::System(name => '1Sect120', rx => -89, tx => 3.2, h => 15, antenna => 'yagi.ant' );
 $rm->systems->add($system);
 
 # Add Nets
 
 # via addNew
-my $Net = $rm->nets->addNew('5Ghz');
+my $net = $rm->nets->addNew('5Ghz');
+$net->minfx(5200);
+$net->maxfx(5800);
 
-#via new
-#$system = new RadioMobile::System(name => '1Sect120', rx => -89, tx => 3.2, h => 15, antenna => '1sect120.ant' );
-#$rm->systems->add($system);
+# via new
+$net = new RadioMobile::Net(name => '2.4Ghz', minfx => 2340, maxfx => 2480);
+$rm->nets->add($net);
+
+$rm->netsunits->at(0,0)->isIn(1);
+$rm->netsunits->at(0,0)->height(200);
 
 my $data = $rm->write;
-
-
-use Data::Dumper;
-print Data::Dumper::Dumper($rm);
-
-open(DEBUG,'>./debug.net');
-
-print DEBUG $data;
-
-close(DEBUG);
 

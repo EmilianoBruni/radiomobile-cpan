@@ -46,9 +46,20 @@ sub dump {
 sub add {
 	my $s		= shift;
 	my $item	= shift;
+	my $nus		= $s->container->netsunits;
 	$s->push($item);
+	# sincronizzo header
 	$s->container->header->unitCount($s->length);
-	$s->at(-1)->idx($s->length-1);
+	my $unit = $s->at(-1);
+	$unit->idx($s->length-1);
+	# se serve, sincronizzo NetsUnits
+	unless ($s->container->nets->length == 0) {
+		unless (defined $nus->at(0, $unit->idx)) {
+			foreach my $idxNet (0..$s->container->header->networkCount-1) {
+				$nus->resetNetUnit($unit->idx,$idxNet);
+			}
+		}
+	}
 	return $s->at(-1);
 }
 
