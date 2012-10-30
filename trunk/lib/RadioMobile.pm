@@ -60,7 +60,7 @@
 	use Class::MethodMaker [ scalar => [qw/filepath debug header units 
 		bfile file systems nets netsunits config cov/] ];
 
-	our $VERSION	= '0.10';
+	our $VERSION	= '0.11';
 
 	sub new {
 		my $proto 	= shift;

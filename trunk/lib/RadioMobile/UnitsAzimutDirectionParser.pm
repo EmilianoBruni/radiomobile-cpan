@@ -7,7 +7,7 @@ use Class::Container;
 use Params::Validate qw(:types);
 use base qw(Class::Container);
 
-our $VERSION    = '0.10';
+our $VERSION    = '0.11';
 
 __PACKAGE__->valid_params( 
 							parent	=> {isa => 'RadioMobile'},
@@ -81,7 +81,7 @@ sub write {
 	foreach my $idxUnit (0..$h->unitCount-1) {
 		foreach my $idxNet (0..$h->networkCount-1) {
 			my $unit = $n->at($idxNet,$idxUnit);
-			if ($unit->direction eq '') {
+			if ($unit->direction eq '' || $unit->direction == 0) {
 				$f->put_bytes(pack('S',$unit->azimut*10));
 			} else {
 				$f->put_bytes(pack('S',$unit->direction+10000));
